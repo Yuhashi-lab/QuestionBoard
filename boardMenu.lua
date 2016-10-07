@@ -1,50 +1,67 @@
 -- 回答者(企業側)が掲示板を確認する画面
 
-local composer = require( "composer" )
+-- ライブラリ
+local composer 	= require( "composer" )
+local widget 		= require "widget"
+
+-- 定数
+local _W = display.viewableContentWidth
+local _H = display.viewableContentHeight
+
+-- オブジェクト
 local scene = composer.newScene()
 
-local widget = require "widget"
+local bg 					-- 背景
+local title 			-- タイトル
 
-local _W = display.viewableContentWidth -- 画面の幅の取得
-local _H = display.viewableContentHeight -- 画面の高さの取得
+local boardName 	-- ”ボード名”テキスト
 
-local back -- 前の画面に戻るボタン
-local function onBackBtnRelease() -- ログインボタンを押された場合に板新設画面へ
+local backBtn 		-- 前の画面に戻るボタン
+
+
+-- ログインボタンを押された場合に板新設画面へ
+local function onBackBtnRelease()
 	composer.gotoScene( "makeBoard", "fromBottom", 500 )
 	return true
 end
-back = widget.newButton{
-	defaultFile = "back-before.png",
-	overFile = "back.png",
-	width = 50, height = 50,
-	emboss = true,
-	onRelease = onBackBtnRelease	-- ボタンを押された際のファンクション呼び出し
-}
-	back.anchorX = 0 -- 基準点のx座標
-	back.anchorY = 0 -- 基準点のy座標
-	back.x = 0
-	back.y = 0
+
 
 function scene:create( event )
 	local sceneGroup = self.view
-  local bg = display.newImage( "CorkBoard.jpg", 0, 0 ) -- 背景の設定
-	bg.anchorX = 0 -- 背景の四角形の基準点のx座標
-	bg.anchorY = 0 -- 背景の四角形の基準点のy座標
 
-	local title = display.newRect(_W/2, 70,_W * 0.5,40 ) -- ページ上部にタイトルを表示
-	title:setFillColor( 1 )	-- 白
+	-- 背景設定
+	bg 					= display.newImage( "CorkBoard.jpg", 0, 0 )
+	bg.anchorX 	= 0
+	bg.anchorY 	= 0
+
+	-- タイトル設定
+	title 						= display.newRect(_W/2, 70,_W * 0.5,40 )
   title.strokeWidth = 3
+	title:setFillColor( 1 )
   title:setStrokeColor( 0 )
 
-
-  local boardName = display.newText( "ボード名", _W/2, 72, native.systemFont, 32 )
+	-- テキスト設定
+  boardName = display.newText( "ボード名", _W/2, 72, native.systemFont, 32 )
   boardName:setTextColor(0,0,0)
 
+	-- ボタン設定
+	backBtn = widget.newButton{
+		defaultFile 			= "back-before.png",
+		overFile 					= "back.png",
+		width 						= 50,
+		height 						= 50,
+		emboss 						= true,
+		onRelease 				= onBackBtnRelease
+	}
+		backBtn.anchorX 	= 0
+		backBtn.anchorY 	= 0
+		backBtn.x 				= 0
+		backBtn.y 				= 0
 
 	sceneGroup:insert( bg )
 	sceneGroup:insert( title )
   sceneGroup:insert( boardName )
-	sceneGroup:insert( back )
+	sceneGroup:insert( backBtn )
 
 end
 

@@ -1,83 +1,102 @@
 -- 質問者が掲示板を選び、質問をするための画面へ動くための画面
 
+-- ライブラリ
 local composer = require( "composer" )
-local scene = composer.newScene()
-
 local widget = require "widget"
 
-local _W = display.viewableContentWidth -- 画面の幅の取得
-local _H = display.viewableContentHeight -- 画面の高さの取得
+-- 定数
+local _W = display.viewableContentWidth
+local _H = display.viewableContentHeight
 
-local searchBtn -- "検索"と書かれたボタン
-local back -- 前の画面に戻るボタン
-local function onBackBtnRelease() -- ログインボタンを押された場合に板新設画面へ
+-- 変数
+local inputName				--入力された名前保存用
+local inputCat 				--入力されたカテゴリ保存用
+
+-- オブジェクト
+local scene = composer.newScene()
+
+local bg 							-- 背景
+local title 					--タイトル
+local searchBtn 			-- "検索"ボタン
+local backBtn 				-- 戻るボタン
+
+local nameHelp				-- "板の名前を検索"テキスト
+local categoryHelp		-- ”カテゴリー名で検索”テキスト
+
+local nameField				-- 質問板を入力させるテキストフィール
+local categoryField 	-- 板のカテゴリを入力させるテキストフィールド
+
+
+-- 戻るボタンを押された場合はトップ画面へ
+local function onBackBtnRelease()
 	composer.gotoScene( "top", "fromBottom", 500 )
 	return true
 end
-back = widget.newButton{
-	defaultFile = "back-before.png",
-	overFile = "back.png",
-	width = 50, height = 50,
-	emboss = true,
-	onRelease = onBackBtnRelease	-- ボタンを押された際のファンクション呼び出し
-}
-	back.anchorX = 0 -- 基準点のx座標
-	back.anchorY = 0 -- 基準点のy座標
-	back.x = 0
-	back.y = 0
 
+-- 検索ボタンを押された場合に板検索一覧の表示
+local function onSearchBtnRelease()
+	inputName = nameField.text -- 入力された名前
+	inputCat = categoryField.text -- 入力されたカテゴリー名
 
-local function onSearchBtnRelease() -- 検索ボタンを押された場合に板検索一覧の表示
 	composer.gotoScene( "searchResult", "fromBottom", 500 )
 	return true
 end
 
-
-local nameHelp = display.newText( "板の名前を検索", _W/6, _H/4 , native.systemFont, 26 )
-nameHelp.anchorX = 0 -- 表示文字の基準点のx座標
-nameHelp.anchorY = 0 -- 表示文字の基準点のy座標
-nameHelp:setTextColor(0,0,0)
-
-local categoryHelp = display.newText( "カテゴリー名で検索", _W/6, _H/2 - 50, native.systemFont, 26 )
-categoryHelp.anchorX = 0 -- 表示文字の基準点のx座標
-categoryHelp.anchorY = 0 -- 表示文字の基準点のy座標
-categoryHelp:setTextColor(0,0,0)
-
-
-local nameField = native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16) -- IDを入力させるテキストフィールド
-local categoryField = native.newTextField( _W/2, _H/2, _W/3*2, _H/16) -- IDを入力させるテキストフィールド
-
-local inputID = nameField.text -- 入力された名前
-local inputPSW = categoryField.text -- 入力されたカテゴリー名
-
-
 function scene:create( event )
 	local sceneGroup = self.view
-	local bg = display.newRect( 0, 0, _W, _H ) -- 背景の設定
-	bg.anchorX = 0 -- 背景の四角形の基準点のx座標
-	bg.anchorY = 0 -- 背景の四角形の基準点のy座標
-	bg:setFillColor( 1 )	-- 白
 
+	-- 背景設定
+	bg 					= display.newRect( 0, 0, _W, _H )
+	bg.anchorX 	= 0
+	bg.anchorY 	= 0
+	bg:setFillColor( 1 )
 
-	local title = display.newText( "ボード検索", 0, 0, native.systemFont, 32 ) -- ページ上部にタイトルを表示
-	title:setFillColor( 0 )	-- 黒
+	-- タイトル設定
+	title 	= display.newText( "ボード検索", 0, 0, native.systemFont, 32 )
 	title.x = _W/2
 	title.y = 70
+	title:setFillColor( 0 )
 
+	-- テキスト設定
+	nameHelp 					= display.newText( "板の名前を検索", _W/6, _H/4 , native.systemFont, 26 )
+	nameHelp.anchorX 	= 0
+	nameHelp.anchorY 	= 0
+	nameHelp:setTextColor(0,0,0)
+
+	categoryHelp 					= display.newText( "カテゴリー名で検索", _W/6, _H/2 - 50, native.systemFont, 26 )
+	categoryHelp.anchorX 	= 0
+	categoryHelp.anchorY 	= 0
+	categoryHelp:setTextColor(0,0,0)
+
+	-- 入力フィールド設定
+	nameField 		= native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16)
+	categoryField = native.newTextField( _W/2, _H/2, _W/3*2, _H/16)
+
+	--ボタン設定
 	searchBtn = widget.newButton{
-		label = "検索",
-		labelColor = { default={255}, over={128} },
+		label 			= "検索",
+		labelColor 	= { default={255}, over={128} },
 		defaultFile = "btn.png",
-		overFile = "btnover.png",
-		width = _W/3*2, height = _H/8,
-		emboss = true,
-		onRelease = onSearchBtnRelease	-- ボタンを押された際のファンクション呼び出し
+		overFile 		= "btnover.png",
+		width 			= _W/3*2, height = _H/8,
+		emboss 			= true,
+		onRelease 	= onSearchBtnRelease
 	}
-    searchBtn.x = _W*0.5
-    searchBtn.y = _H /3 *2
+  searchBtn.x 	= _W*0.5
+  searchBtn.y 	= _H /3 *2
 
-
-
+	backBtn = widget.newButton{
+		defaultFile 		= "back-before.png",
+		overFile 				= "back.png",
+		width 					= 50,
+		height 					= 50,
+		emboss 					= true,
+		onRelease 			= onBackBtnRelease
+	}
+		backBtn.anchorX = 0
+		backBtn.anchorY = 0
+		backBtn.x 			= 0
+		backBtn.y 			= 0
 
 	sceneGroup:insert( bg )
 	sceneGroup:insert( title )
@@ -86,8 +105,7 @@ function scene:create( event )
   sceneGroup:insert( categoryField )
   sceneGroup:insert( nameHelp )
   sceneGroup:insert( categoryHelp )
-
-	sceneGroup:insert( back )
+	sceneGroup:insert( backBtn )
 
 end
 
@@ -130,9 +148,9 @@ function scene:destroy( event )
 		searchBtn = nil
 	end
 
-	if back then
-		back:removeSelf()	-- widgets must be manually removed
-		back = nil
+	if backBtn then
+		backBtn:removeSelf()	-- widgets must be manually removed
+		backBtn = nil
 	end
 
   if nameHelp then

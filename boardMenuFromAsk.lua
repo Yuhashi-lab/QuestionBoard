@@ -1,63 +1,81 @@
 -- 回答者(企業側)が掲示板を確認する画面
 
-local composer = require( "composer" )
+-- ライブラリ
+local composer 	= require( "composer" )
+local widget 		= require "widget"
+
+-- 定数
+local _W = display.viewableContentWidth
+local _H = display.viewableContentHeight
+
+-- オブジェクト
 local scene = composer.newScene()
 
-local widget = require "widget"
+local bg 				-- 背景
+local title 		-- タイトル
 
-local _W = display.viewableContentWidth -- 画面の幅の取得
-local _H = display.viewableContentHeight -- 画面の高さの取得
+local boardName -- テキスト
 
-local back -- 前の画面に戻るボタン
-local function onBackBtnRelease() -- ログインボタンを押された場合に板新設画面へ
+local back 			-- 前の画面に戻るボタン
+local askBtn 		-- 質問入力画面へ進むボタン
+
+-- 質問入力画面へ進む
+local function onAskBtnRelease()
+	composer.gotoScene( "question", "fromBottom", 500 )
+	return true
+end
+
+-- 検索結果画面へ戻る
+local function onBackBtnRelease()
 	composer.gotoScene( "searchResult", "fromBottom", 500 )
 	return true
 end
-back = widget.newButton{
-	defaultFile = "back-before.png",
-	overFile = "back.png",
-	width = 50, height = 50,
-	emboss = true,
-	onRelease = onBackBtnRelease	-- ボタンを押された際のファンクション呼び出し
-}
-	back.anchorX = 0 -- 基準点のx座標
-	back.anchorY = 0 -- 基準点のy座標
-	back.x = 0
-	back.y = 0
-
-  local askBtn
-  local function onAskBtnRelease() -- ログインボタンを押された場合に板新設画面へ
-  	composer.gotoScene( "question", "fromBottom", 500 )
-  	return true
-  end
-  askBtn = widget.newButton{
-  	defaultFile = "ask.png",
-  	overFile = "ask.png",
-  	width = 50, height = 50,
-  	emboss = true,
-  	onRelease = onAskBtnRelease	-- ボタンを押された際のファンクション呼び出し
-  }
-  	askBtn.anchorX = 0 -- 基準点のx座標
-  	askBtn.anchorY = 0 -- 基準点のy座標
-  	askBtn.x = _W - 50
-  	askBtn.y = _H - 50
-
 
 function scene:create( event )
 	local sceneGroup = self.view
-  local bg = display.newImage( "CorkBoard.jpg", 0, 0 ) -- 背景の設定
-	bg.anchorX = 0 -- 背景の四角形の基準点のx座標
-	bg.anchorY = 0 -- 背景の四角形の基準点のy座標
 
-	local title = display.newRect(_W/2, 70,_W * 0.5,40 ) -- ページ上部にタイトルを表示
-	title:setFillColor( 1 )	-- 白
-  title.strokeWidth = 3
-  title:setStrokeColor( 0 )
+	-- 背景設定
+  bg 					= display.newImage( "CorkBoard.jpg", 0, 0 )
+	bg.anchorX 	= 0
+	bg.anchorY 	= 0
+
+	-- タイトル設定
+	title = display.newRect(_W/2, 70,_W * 0.5,40 )
+	title.strokeWidth = 3
+	title:setStrokeColor( 0 )
+	title:setFillColor( 1 )
 
 
-  local boardName = display.newText( "ボード名", _W/2, 72, native.systemFont, 32 )
+	-- テキスト設定
+  boardName = display.newText( "ボード名", _W/2, 72, native.systemFont, 32 )
   boardName:setTextColor(0,0,0)
 
+	-- ボタン設定
+	back = widget.newButton{
+		defaultFile 	= "back-before.png",
+		overFile 			= "back.png",
+		width 				= 50,
+		height 				= 50,
+		emboss 				= true,
+		onRelease 		= onBackBtnRelease
+	}
+	back.anchorX 		= 0
+	back.anchorY 		= 0
+	back.x 					= 0
+	back.y 					= 0
+
+	askBtn = widget.newButton{
+	  defaultFile 	= "ask.png",
+	  overFile		 	= "ask.png",
+	  width 				= 50,
+		height 				= 50,
+	  emboss 				= true,
+		onRelease 		= onAskBtnRelease
+	}
+	askBtn.anchorX 	= 0
+	askBtn.anchorY 	= 0
+	askBtn.x 				= _W - 50
+	askBtn.y 				= _H - 50
 
 	sceneGroup:insert( bg )
 	sceneGroup:insert( title )

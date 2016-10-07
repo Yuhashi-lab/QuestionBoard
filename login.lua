@@ -1,100 +1,125 @@
 -- ログイン画面
 
+-- ライブラリ
 local composer = require( "composer" )
-local scene = composer.newScene()
-
 local widget = require "widget"
 
-local _W = display.viewableContentWidth -- 画面の幅の取得
-local _H = display.viewableContentHeight -- 画面の高さの取得
+-- 定数
+local _W = display.viewableContentWidth 		-- 画面の幅の取得
+local _H = display.viewableContentHeight 		-- 画面の高さの取得
 
-local LoginBtn -- "ログイン"と書かれたボタン
-local newAccount -- "新規入会"と書かれたボタン
-local back -- 前の画面に戻るボタン
-local function onBackBtnRelease() -- ログインボタンを押された場合に板新設画面へ
+-- 変数
+local inputID						--入力されたID取得用
+local inputPSW					--入力されたパスワード取得用
+
+-- オブジェクト
+local scene = composer.newScene()
+
+local bg								--背景
+local title							--タイトルテキスト
+
+local IDHelp						--"ID:"テキスト
+local PSWHelp						--"Password:"テキスト
+
+local IDField						--ID入力フィールド
+local PSWField					--パスワード入力フィールド
+
+local LoginBtn 					-- "ログイン"ボタン
+local newAccountBtn 		-- "新規入会"ボタン
+local backBtn 					-- 戻るボタン
+
+-- 戻るボタンを押された際にトップ画面へ
+local function onBackBtnRelease()
 	composer.gotoScene( "top", "fromBottom", 500 )
 	return true
 end
-back = widget.newButton{
-	defaultFile = "back-before.png",
-	overFile = "back.png",
-	width = 50, height = 50,
-	emboss = true,
-	onRelease = onBackBtnRelease	-- ボタンを押された際のファンクション呼び出し
-}
-	back.anchorX = 0 -- 基準点のx座標
-	back.anchorY = 0 -- 基準点のy座標
-	back.x = 0
-	back.y = 0
 
+-- ログインボタンを押された場合に板新設画面へ
+local function onLoginBtnRelease()
+	inputID 	= IDField.text
+	inputPSW 	= PSWField.text
 
-local function onLoginBtnRelease() -- ログインボタンを押された場合に板新設画面へ
 	composer.gotoScene( "makeBoard", "fromBottom", 500 )
 	return true
 end
 
-local function onNewAccountRelease() -- ログインボタンを押された場合に板新設画面へ
+-- 新規入会ボタンを押された場合にアカウント作成画面へ
+local function onNewAccountBtnRelease()
 	composer.gotoScene( "newAccount", "fromBottom", 500 )
 	return true
 end
 
-
-local IDHelp = display.newText( "ID:", _W/6, _H/4 , native.systemFont, 26 )
-IDHelp.anchorX = 0 -- 表示文字の基準点のx座標
-IDHelp.anchorY = 0 -- 表示文字の基準点のy座標
-IDHelp:setTextColor(0,0,0)
-
-local PSWHelp = display.newText( "Pasword:", _W/6, _H/2 - 50, native.systemFont, 26 )
-PSWHelp.anchorX = 0 -- 表示文字の基準点のx座標
-PSWHelp.anchorY = 0 -- 表示文字の基準点のy座標
-PSWHelp:setTextColor(0,0,0)
-
-
-local IDField = native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16) -- IDを入力させるテキストフィールド
-local PSWField = native.newTextField( _W/2, _H/2, _W/3*2, _H/16) -- IDを入力させるテキストフィールド
-PSWField.isSecure = true
-
-local inputID = IDField.text -- 入力されたID
-local inputPSW = PSWField.text -- 入力されたパスワード
-
-
 function scene:create( event )
 	local sceneGroup = self.view
-	local bg = display.newRect( 0, 0, _W, _H ) -- 背景の設定
-	bg.anchorX = 0 -- 背景の四角形の基準点のx座標
-	bg.anchorY = 0 -- 背景の四角形の基準点のy座標
-	bg:setFillColor( 1 )	-- 白
 
+	-- 背景設定
+	bg 					= display.newRect( 0, 0, _W, _H )
+	bg.anchorX 	= 0
+	bg.anchorY 	= 0
+	bg:setFillColor( 1 )
 
-	local title = display.newText( "Login", 0, 0, native.systemFont, 32 ) -- ページ上部にタイトルを表示
-	title:setFillColor( 0 )	-- 黒
-	title.x = _W/2
+	-- タイトル設定
+	title 	= display.newText( "Login", 0, 0, native.systemFont, 32 )
+	title.x = _W / 2
 	title.y = 70
+	title:setFillColor( 0 )
 
+
+	--入力フィールド用テキスト
+	IDHelp 					= display.newText( "ID:", _W / 6, _H / 4 , native.systemFont, 26 )
+	IDHelp.anchorX 	= 0
+	IDHelp.anchorY 	= 0
+	IDHelp:setTextColor(0,0,0)
+
+	PSWHelp 				= display.newText( "Password:", _W / 6, _H / 2 - 50, native.systemFont, 26 )
+	PSWHelp.anchorX = 0
+	PSWHelp.anchorY = 0
+	PSWHelp:setTextColor(0,0,0)
+
+	--入力フィールド
+	IDField 					= native.newTextField( _W/2, _H/4+50, _W/3*2, _H/16)
+	PSWField 					= native.newTextField( _W/2, _H/2, _W/3*2, _H/16)
+	PSWField.isSecure = true
+
+	--遷移ボタン
 	LoginBtn = widget.newButton{
-		label = "ログイン",
-		labelColor = { default={255}, over={128} },
+		label 			= "ログイン",
+		labelColor 	= { default={255}, over={128} },
 		defaultFile = "btn.png",
-		overFile = "btnover.png",
-		width = _W/3*2, height = _H/8,
-		emboss = true,
-		onRelease = onLoginBtnRelease	-- ボタンを押された際のファンクション呼び出し
+		overFile 		= "btnover.png",
+		width 			= _W / 3 * 2,
+		height 			= _H / 8,
+		emboss 			= true,
+		onRelease 	= onLoginBtnRelease
 	}
     LoginBtn.x = _W*0.5
-    LoginBtn.y = _H /3 *2
+    LoginBtn.y = _H/3*2
 
-
-  newAccount = widget.newButton{
-		label = "新規入会",
-		labelColor = { default={0}, over={128} },
-		defaultFile = "btn.png",
-		overFile = "btnover.png",
-		width = _W/3*2, height = _H/16,
-		emboss = true,
-		onRelease = onNewAccountRelease	-- ボタンを押された際のファンクション呼び出し
+  newAccountBtn = widget.newButton{
+		label 				= "新規入会",
+		labelColor 		= { default={0}, over={128} },
+		defaultFile 	= "btn.png",
+		overFile			= "btnover.png",
+		width 				= _W / 3 * 2,
+		height	 			= _H / 16,
+		emboss 				= true,
+		onRelease 		= onNewAccountBtnRelease
 	}
-  newAccount.x = _W*0.5
-  newAccount.y = _H /3 *2 + 50
+  newAccountBtn.x = _W*0.5
+  newAccountBtn.y = _H/3*2+50
+
+	backBtn = widget.newButton{
+		defaultFile 		= "back-before.png",
+		overFile 				= "back.png",
+		width 					= 50,
+		height 					= 50,
+		emboss 					= true,
+		onRelease 			= onBackBtnRelease
+	}
+		backBtn.anchorX = 0
+		backBtn.anchorY = 0
+		backBtn.x 			= 0
+		backBtn.y 			= 0
 
 	sceneGroup:insert( bg )
 	sceneGroup:insert( title )
@@ -103,8 +128,8 @@ function scene:create( event )
   sceneGroup:insert( PSWField )
   sceneGroup:insert( IDHelp )
   sceneGroup:insert( PSWHelp )
-  sceneGroup:insert( newAccount )
-	sceneGroup:insert( back )
+  sceneGroup:insert( newAccountBtn )
+	sceneGroup:insert( backBtn )
 
 end
 
@@ -147,9 +172,9 @@ function scene:destroy( event )
 		LoginBtn = nil
 	end
 
-	if back then
-		back:removeSelf()	-- widgets must be manually removed
-		back = nil
+	if backBtn then
+		backBtn:removeSelf()	-- widgets must be manually removed
+		backBtn = nil
 	end
 
   if IDHelp then
@@ -162,13 +187,12 @@ function scene:destroy( event )
     PSWHelp = nil
   end
 
-  if newAccount then
-    newAccount:removeSelf()	-- widgets must be manually removed
-    newAccount = nil
+  if newAccountBtn then
+    newAccountBtn:removeSelf()	-- widgets must be manually removed
+    newAccountBtn = nil
   end
-
-
 end
+
 
 ---------------------------------------------------------------------------------
 
