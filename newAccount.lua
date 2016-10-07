@@ -88,14 +88,7 @@ function scene:create( event )
   PSW2Help.anchorY  = 0
   PSW2Help:setTextColor(0,0,0)
 
-  -- 入力フィールド設定
-  emailField = native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16)
 
-  PSWField          = native.newTextField( _W/2, _H/2, _W/3*2, _H/16)
-  PSWField.isSecure = true
-
-  PSW2Field           = native.newTextField( _W/2, _H/4*3 - 50, _W/3*2, _H/16)
-  PSW2Field.isSecure  = true
 
   -- ボタン設定
   registrationBtn = widget.newButton{
@@ -129,11 +122,8 @@ function scene:create( event )
   sceneGroup:insert( title )
   sceneGroup:insert( back )
   sceneGroup:insert( emailHelp )
-  sceneGroup:insert( emailField )
   sceneGroup:insert( PSWHelp )
-  sceneGroup:insert( PSWField )
   sceneGroup:insert( PSW2Help )
-  sceneGroup:insert( PSW2Field )
   sceneGroup:insert( registrationBtn )
 
 end
@@ -143,6 +133,20 @@ function scene:show( event )
 	local phase = event.phase
 
 	if phase == "will" then
+
+    -- 入力フィールド設定
+    emailField = native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16)
+
+    PSWField          = native.newTextField( _W/2, _H/2, _W/3*2, _H/16)
+    PSWField.isSecure = true
+
+    PSW2Field           = native.newTextField( _W/2, _H/4*3 - 50, _W/3*2, _H/16)
+    PSW2Field.isSecure  = true
+
+    sceneGroup:insert( emailField )
+    sceneGroup:insert( PSWField )
+    sceneGroup:insert( PSW2Field )
+
 	elseif phase == "did" then
 
 	end
@@ -155,38 +159,24 @@ function scene:hide( event )
 	if event.phase == "will" then
 
     if emailField then
-        emailField:removeSelf()	-- widgets must be manually removed
-        emailField = nil
+        emailField:removeSelf()
     end
 
     if PSWField then
-        PSWField:removeSelf()	-- widgets must be manually removed
-        PSWField = nil
+        PSWField:removeSelf()
     end
 
     if PSW2Field then
-        PSW2Field:removeSelf()	-- widgets must be manually removed
-        PSW2Field = nil
+        PSW2Field:removeSelf()
     end
 
-
-
 	elseif phase == "did" then
-			end
+
+	end
 end
 
 function scene:destroy( event )
 	local sceneGroup = self.view
-
-  if title then
-    title:removeSelf()	-- widgets must be manually removed
-    title = nil
-  end
-
-  if registrationBtn then
-    registrationBtn:removeSelf()	-- widgets must be manually removed
-    registrationBtn = nil
-  end
 
 end
 

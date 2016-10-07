@@ -76,11 +76,6 @@ function scene:create( event )
 	PSWHelp.anchorY = 0
 	PSWHelp:setTextColor(0,0,0)
 
-	--入力フィールド
-	IDField 					= native.newTextField( _W/2, _H/4+50, _W/3*2, _H/16)
-	PSWField 					= native.newTextField( _W/2, _H/2, _W/3*2, _H/16)
-	PSWField.isSecure = true
-
 	--遷移ボタン
 	LoginBtn = widget.newButton{
 		label 			= "ログイン",
@@ -124,8 +119,7 @@ function scene:create( event )
 	sceneGroup:insert( bg )
 	sceneGroup:insert( title )
 	sceneGroup:insert( LoginBtn )
-  sceneGroup:insert( IDField )
-  sceneGroup:insert( PSWField )
+
   sceneGroup:insert( IDHelp )
   sceneGroup:insert( PSWHelp )
   sceneGroup:insert( newAccountBtn )
@@ -138,6 +132,15 @@ function scene:show( event )
 	local phase = event.phase
 
 	if phase == "will" then
+
+		--入力フィールド
+		IDField 					= native.newTextField( _W/2, _H/4+50, _W/3*2, _H/16)
+		PSWField 					= native.newTextField( _W/2, _H/2, _W/3*2, _H/16)
+		PSWField.isSecure = true
+
+		sceneGroup:insert( IDField )
+	  sceneGroup:insert( PSWField )
+
 	elseif phase == "did" then
 
 	end
@@ -148,49 +151,21 @@ function scene:hide( event )
 	local phase = event.phase
 
 	if event.phase == "will" then
+		if IDField then
+				IDField:removeSelf()
+		end
 
-    if IDField then
-        IDField:removeSelf()	-- widgets must be manually removed
-        IDField = nil
-    end
-
-    if PSWField then
-        PSWField:removeSelf()	-- widgets must be manually removed
-        PSWField = nil
-    end
-
+		if PSWField then
+				PSWField:removeSelf()
+		end
 	elseif phase == "did" then
-			end
+
+	end
 end
 
 function scene:destroy( event )
 	local sceneGroup = self.view
 
-	--ボタンを削除する
-	if LoginBtn then
-		LoginBtn:removeSelf()	-- widgets must be manually removed
-		LoginBtn = nil
-	end
-
-	if backBtn then
-		backBtn:removeSelf()	-- widgets must be manually removed
-		backBtn = nil
-	end
-
-  if IDHelp then
-    IDHelp:removeSelf()	-- widgets must be manually removed
-    IDHelp = nil
-  end
-
-  if PSWHelp then
-    PSWHelp:removeSelf()	-- widgets must be manually removed
-    PSWHelp = nil
-  end
-
-  if newAccountBtn then
-    newAccountBtn:removeSelf()	-- widgets must be manually removed
-    newAccountBtn = nil
-  end
 end
 
 

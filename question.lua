@@ -78,12 +78,6 @@ function scene:create( event )
   questionHelp.anchorY  = 0
   questionHelp:setTextColor(0,0,0)
 
-  --入力フィールド設定
-  titleField          = native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16)
-
-  questionField       = native.newTextBox( _W/2, _H/3*2 - 30, _W/3*2, _H/4)
-  questionField.size  = 12
-
   -- ボタン設定
   registrationBtn = widget.newButton{
   	label           = "質問を投稿する",
@@ -115,9 +109,7 @@ function scene:create( event )
 	sceneGroup:insert( title )
 	sceneGroup:insert( backBtn )
   sceneGroup:insert( titleHelp )
-  sceneGroup:insert( titleField )
   sceneGroup:insert( questionHelp )
-  sceneGroup:insert( questionField )
   sceneGroup:insert( registrationBtn )
 
 end
@@ -127,6 +119,16 @@ function scene:show( event )
 	local phase = event.phase
 
 	if phase == "will" then
+    
+    --入力フィールド設定
+    titleField          = native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16)
+
+    questionField       = native.newTextBox( _W/2, _H/3*2 - 30, _W/3*2, _H/4)
+    questionField.size  = 12
+
+    sceneGroup:insert( titleField )
+    sceneGroup:insert( questionField )
+
 	elseif phase == "did" then
 
 	end
@@ -139,33 +141,19 @@ function scene:hide( event )
 	if event.phase == "will" then
 
     if titleField then
-        titleField:removeSelf()	-- widgets must be manually removed
-        titleField = nil
+        titleField:removeSelf()
     end
 
     if questionField then
-        questionField:removeSelf()	-- widgets must be manually removed
-        questionField = nil
+        questionField:removeSelf()
     end
 
-	elseif phase == "did" then
-			end
+	  elseif phase == "did" then
+	  end
 end
 
 function scene:destroy( event )
 	local sceneGroup = self.view
-
-  if boardName then
-    boardName:removeSelf()	-- widgets must be manually removed
-    boardName = nil
-  end
-
-  if registrationBtn then
-    registrationBtn:removeSelf()	-- widgets must be manually removed
-    registrationBtn = nil
-  end
-
-
 
 end
 

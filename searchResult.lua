@@ -100,16 +100,6 @@ end
 function scene:destroy( event )
 	local sceneGroup = self.view
 
-	--ボタンを削除する
-	if DecideBtn then
-		DecideBtn:removeSelf()	-- widgets must be manually removed
-		DecideBtn = nil
-	end
-
-  if back then
-		back:removeSelf()	-- widgets must be manually removed
-		back = nil
-	end
 
 end
 

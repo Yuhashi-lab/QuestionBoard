@@ -101,24 +101,12 @@ function scene:hide( event )
 
 	if event.phase == "will" then
 
-
 	elseif phase == "did" then
 			end
 end
 
 function scene:destroy( event )
 	local sceneGroup = self.view
-
-  if boardName then
-    boardName:removeSelf()	-- widgets must be manually removed
-    boardName = nil
-  end
-
-	if askBtn then
-		askBtn:removeSelf()	-- widgets must be manually removed
-		askBtn = nil
-	end
-
 
 end
 

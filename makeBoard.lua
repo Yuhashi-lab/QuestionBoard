@@ -70,10 +70,6 @@ function scene:create( event )
 	categoryHelp.anchorY 	= 0
 	categoryHelp:setTextColor(0,0,0)
 
-	-- 入力フィールド設定
-	boardNameField = native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16)
-	categoryField = native.newTextField( 	_W/2, _H/2, _W/3*2, _H/16)
-
 	-- ボタン設定
 	makeBtn = widget.newButton{
 		label 			= "作成",
@@ -104,8 +100,6 @@ function scene:create( event )
 	sceneGroup:insert( bg )
 	sceneGroup:insert( title )
 	sceneGroup:insert( makeBtn )
-  sceneGroup:insert( boardNameField )
-  sceneGroup:insert( categoryField )
   sceneGroup:insert( boardNameHelp )
   sceneGroup:insert( categoryHelp )
   sceneGroup:insert( back )
@@ -117,6 +111,14 @@ function scene:show( event )
 	local phase = event.phase
 
 	if phase == "will" then
+
+		-- 入力フィールド設定
+		boardNameField 	= native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16)
+		categoryField 	= native.newTextField( 	_W/2, _H/2, _W/3*2, _H/16)
+
+		sceneGroup:insert( boardNameField )
+		sceneGroup:insert( categoryField )
+
 	elseif phase == "did" then
 
 	end
@@ -127,16 +129,13 @@ function scene:hide( event )
 	local phase = event.phase
 
 	if event.phase == "will" then
+		if boardNameField then
+			boardNameField:removeSelf()
+		end
 
-        if boardNameField then
-            boardNameField:removeSelf()	-- widgets must be manually removed
-            boardNameField = nil
-        end
-
-        if categoryField then
-            categoryField:removeSelf()	-- widgets must be manually removed
-            categoryField = nil
-        end
+		if categoryField then
+			categoryField:removeSelf()
+		end
 
 	elseif phase == "did" then
 			end
@@ -144,22 +143,6 @@ end
 
 function scene:destroy( event )
 	local sceneGroup = self.view
-
-	--ボタンを削除する
-	if makeBtn then
-		makeBtn:removeSelf()	-- widgets must be manually removed
-		makeBtn = nil
-	end
-
-  if boardNameField then
-    boardNameField:removeSelf()	-- widgets must be manually removed
-    boardNameField = nil
-  end
-
-  if categoryField then
-    categoryField:removeSelf()	-- widgets must be manually removed
-    categoryField = nil
-  end
 
 end
 

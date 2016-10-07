@@ -89,12 +89,6 @@ end
 function scene:destroy( event )
 	local sceneGroup = self.view
 
-  if boardName then
-    boardName:removeSelf()	-- widgets must be manually removed
-    boardName = nil
-  end
-
-
 end
 
 ---------------------------------------------------------------------------------

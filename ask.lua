@@ -68,9 +68,7 @@ function scene:create( event )
 	categoryHelp.anchorY 	= 0
 	categoryHelp:setTextColor(0,0,0)
 
-	-- 入力フィールド設定
-	nameField 		= native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16)
-	categoryField = native.newTextField( _W/2, _H/2, _W/3*2, _H/16)
+
 
 	--ボタン設定
 	searchBtn = widget.newButton{
@@ -101,8 +99,6 @@ function scene:create( event )
 	sceneGroup:insert( bg )
 	sceneGroup:insert( title )
 	sceneGroup:insert( searchBtn )
-  sceneGroup:insert( nameField )
-  sceneGroup:insert( categoryField )
   sceneGroup:insert( nameHelp )
   sceneGroup:insert( categoryHelp )
 	sceneGroup:insert( backBtn )
@@ -114,6 +110,14 @@ function scene:show( event )
 	local phase = event.phase
 
 	if phase == "will" then
+
+		-- 入力フィールド設定
+		nameField 		= native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16)
+		categoryField = native.newTextField( _W/2, _H/2, _W/3*2, _H/16)
+
+		sceneGroup:insert( nameField )
+		sceneGroup:insert( categoryField )
+
 	elseif phase == "did" then
 
 	end
@@ -124,44 +128,22 @@ function scene:hide( event )
 	local phase = event.phase
 
 	if event.phase == "will" then
-
-    if nameField then
-        nameField:removeSelf()	-- widgets must be manually removed
-        nameField = nil
+		if nameField then
+        nameField:removeSelf()
     end
 
-    if categoryField then
-        categoryField:removeSelf()	-- widgets must be manually removed
-        categoryField = nil
-    end
-
+		if categoryField then
+		  categoryField:removeSelf()
+		end
 	elseif phase == "did" then
-			end
+
+
+
+	end
 end
 
 function scene:destroy( event )
 	local sceneGroup = self.view
-
-	--ボタンを削除する
-	if searchBtn then
-		searchBtn:removeSelf()	-- widgets must be manually removed
-		searchBtn = nil
-	end
-
-	if backBtn then
-		backBtn:removeSelf()	-- widgets must be manually removed
-		backBtn = nil
-	end
-
-  if nameHelp then
-    nameHelp:removeSelf()	-- widgets must be manually removed
-    nameHelp = nil
-  end
-
-  if categoryHelp then
-    categoryHelp:removeSelf()	-- widgets must be manually removed
-    categoryHelp = nil
-  end
 
 
 end
