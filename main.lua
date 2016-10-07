@@ -25,7 +25,6 @@ logo.y = _H/2 + 50
 -- スプラッシュを閉じる
 
 local function closeSplash()
-
     display.remove(logo)
     logo = nil
     display.remove(background)
