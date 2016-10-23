@@ -31,7 +31,7 @@ local backBtn 					-- 戻るボタン
     -- ログインAPIのリクエストを送る    local reqbody = "email="..emailText.."&password="..passwordText
     local respbody = {}
     local body, code, headers, status = http.request{
-        url = "http://localhost:3000/api/v1/auth/sign_in",
+        url = "http://questionboardweb.herokuapp.com/api/v1/auth/sign_in",
         method = "POST",
         headers =
         {
@@ -48,17 +48,16 @@ local backBtn 					-- 戻るボタン
     userInfo["uId"]         = headers["uid"]
     userInfo["accessToken"] = headers["access-token"]
     userInfo["Client"]      = headers["client"]
-print(respbody)
-local concatRespbody = table.concat(respbody)
-print(concatRespbody)
-local testJson = json.encode(concatRespbody)
-print(testJson)
-local invitation = json.decode(testJson)["is_company"]
-print(invitation)
-local invitation3 = json.decode(concatRespbody)["is_company"]
-print(invitation3)
---local invitation2 = json.decode(respbody)["is_company"]
---print(invitation2)
+
+		print("-------------")
+		user = json.decode(table.concat(respbody))["data"]
+
+		print(user["id"])
+		print(user["provider"])
+		print(user["uid"])
+		print(user["is_admin"])
+		print(user["is_company"])
+		print(user["email"])
 
 end
 

@@ -38,7 +38,7 @@ local function closeSplash()
     logo        = nil
     background  = nil
 
-    composer.gotoScene( "login", "fade", 2000  )
+    composer.gotoScene( "login", "fade", 500  )
 end
 
 timer.performWithDelay(2000, closeSplash)
