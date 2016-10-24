@@ -54,7 +54,7 @@ local function onRegistrationBtnRelease()
      local reqbody = "email="..inputEmail.."&password="..inputPSW.."&password_confirmation="..inputPSW2
      respbody = {}
      local body, code, headers, status = http.request{
-         url = "http://localhost:3000/api/v1/auth",
+         url = "http://questionboardweb.herokuapp.com/api/v1/auth",
          method = "POST",
          headers =
          {

@@ -32,7 +32,7 @@ local backBtn 					-- 戻るボタン
     -- ログインAPIのリクエストを送る    local reqbody = "email="..emailText.."&password="..passwordText
     local respbody = {}
     local body, code, headers, status = http.request{
-        url = "http://localhost:3000/api/v1/auth/sign_in",
+        url = "http://questionboardweb.herokuapp.com/api/v1/auth/sign_in",
         method = "POST",
         headers =
         {
