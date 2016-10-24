@@ -74,8 +74,8 @@ function scene:create( event )
 	searchBtn = widget.newButton{
 		label 			= "検索",
 		labelColor 	= { default={255}, over={128} },
-		defaultFile = "btn.png",
-		overFile 		= "btnover.png",
+		defaultFile = "imgs/apps/btn.png",
+		overFile 		= "imgs/apps/btnover.png",
 		width 			= _W/3*2, height = _H/8,
 		emboss 			= true,
 		onRelease 	= onSearchBtnRelease
@@ -84,8 +84,8 @@ function scene:create( event )
   searchBtn.y 	= _H /3 *2
 
 	backBtn = widget.newButton{
-		defaultFile 		= "back-before.png",
-		overFile 				= "back.png",
+		defaultFile 		= "imgs/apps/back-before.png",
+		overFile 				= "imgs/apps/back.png",
 		width 					= 50,
 		height 					= 50,
 		emboss 					= true,

@@ -74,8 +74,8 @@ function scene:create( event )
 	makeBtn = widget.newButton{
 		label 			= "作成",
 		labelColor 	= { default={255}, over={128} },
-		defaultFile = "btn.png",
-		overFile 		= "btnover.png",
+		defaultFile = "imgs/apps/btn.png",
+		overFile 		= "imgs/apps/btnover.png",
 		width 			= _W/3*2,
 		height 			= _H/8,
 		emboss 			= true,
@@ -85,8 +85,8 @@ function scene:create( event )
 	makeBtn.y 		= _H / 3 * 2 + 70
 
 	back = widget.newButton{
-		defaultFile 	= "back-before.png",
-		overFile 			= "back.png",
+		defaultFile 	= "imgs/apps/back-before.png",
+		overFile 			= "imgs/apps/back.png",
 		width 				= 50,
 		height 				= 50,
 		emboss 				= true,

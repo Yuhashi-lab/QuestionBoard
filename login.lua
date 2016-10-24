@@ -12,7 +12,11 @@ local _H = display.viewableContentHeight 		-- 画面の高さの取得
 local inputPSW					--入力されたパスワード取得用
 
 -- オブジェクトlocal scene = composer.newScene()
+
 local bg								--背景
+local bar               -- タイトルバー
+local barTitle          -- タイトルバーテキスト
+
 local title							--タイトルテキスト
 local emailHelp						--"email:"テキスト
 local PSWHelp						--"Password:"テキスト
@@ -49,14 +53,13 @@ local backBtn 					-- 戻るボタン
     userInfo["accessToken"] = headers["access-token"]
     userInfo["Client"]      = headers["client"]
 
-
-local user = json.decode(table.concat(respbody))["data"]
-print(user["id"])
-
+    local user = json.decode(table.concat(respbody))["data"]
+    print(user["id"])
 end
 
-local function onLoginBtnRelease(event)-- ログインボタンを押された場合に正しいアカウントであれば板新設画面へ
-        getTokens()
+-- ログインボタンを押された場合に正しいアカウントであれば板新設画面へ
+local function onLoginBtnRelease(event)
+        getTokens()
               if(userInfo["uId"]==nil or userInfo["accessToken"]==nil or userInfo["Client"]==nil) then
             flash.text = "Failed"
             flash.isVisible = true
@@ -78,7 +81,18 @@ function scene:create( event )	local sceneGroup = self.view
 	bg.anchorY 	= 0
 	bg:setFillColor( 1 )
 
-	-- タイトル設定	title 	= display.newText( "Questionboard\nLogin", 0, 0, native.systemFont, 32 )
+  -- バー設定
+  bar   = display.newRect(0, 0, _W, _H/7)
+  bar.x = _W/2
+  bar.y = -8
+  bar:setFillColor(0.22, 0.81, 0.87)
+
+  barTitle    = display.newText("Login", 0, 0, native.systemFont, 32)
+  barTitle.x  = _W / 2
+  barTitle.y  = 5
+  barTitle:setFillColor( 0 )
+
+	-- タイトル設定	title 	= display.newText( "Questionboard", 0, 0, native.systemFont, 32 )
 	title.x = _W / 2
 	title.y = 70
 	title:setFillColor( 0 )
@@ -94,8 +108,8 @@ function scene:create( event )	local sceneGroup = self.view
 	--遷移ボタン	LoginBtn = widget.newButton{
 		label 			= "ログイン",
 		labelColor 	= { default={255}, over={128} },
-		defaultFile = "btn.png",
-		overFile 		= "btnover.png",
+		defaultFile = "imgs/apps/btn.png",
+		overFile 		= "imgs/apps/btnover.png",
 		width 			= _W / 3 * 2,
 		height 			= _H / 8,
 		emboss 			= true,
@@ -106,8 +120,8 @@ function scene:create( event )	local sceneGroup = self.view
 
   newAccountBtn = widget.newButton{		label 				= "新規入会",
 		labelColor 		= { default={0}, over={128} },
-		defaultFile 	= "btn.png",
-		overFile			= "btnover.png",
+		defaultFile 	= "imgs/apps/btn.png",
+		overFile			= "imgs/apps/btnover.png",
 		width 				= _W / 3 * 2,
 		height	 			= _H / 16,
 		emboss 				= true,
@@ -117,8 +131,7 @@ function scene:create( event )	local sceneGroup = self.view
   newAccountBtn.x = _W*0.5
   newAccountBtn.y = _H/3*2+50
 
-	sceneGroup:insert( bg )	sceneGroup:insert( title )
-	sceneGroup:insert( LoginBtn )
+	sceneGroup:insert( bg )	sceneGroup:insert( bar )	sceneGroup:insert( barTitle )	sceneGroup:insert( title )	sceneGroup:insert( LoginBtn )
   sceneGroup:insert( emailHelp )
   sceneGroup:insert( PSWHelp )
   sceneGroup:insert( newAccountBtn )

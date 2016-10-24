@@ -21,7 +21,8 @@ local reaction          -- 送信ボタンを押した後の反応文字列
 local scene = composer.newScene()
 
 local bg                --背景
-local title             --タイトル
+local bar               -- タイトルバー
+local barTitle          -- タイトルバーテキスト
 
 local emailHelp         -- "e-mailAddress:"テキスト
 local PSWHelp           -- "Password:"テキスト
@@ -42,14 +43,13 @@ local function onRegistrationBtnRelease()
   inputPSW  = PSWField.text
   inputPSW2 = PSW2Field.text
 
-
-if inputPSW:len() < 5 then
+  if inputPSW:len() < 5 then
 
       reaction.text = "パスワードは6桁以上です"
       reaction.isVisible = true
 
-else
-if inputPSW == inputPSW2 then
+  else
+    if inputPSW == inputPSW2 then
   -- http request
      local reqbody = "email="..inputEmail.."&password="..inputPSW.."&password_confirmation="..inputPSW2
      respbody = {}
@@ -85,18 +85,16 @@ if inputPSW == inputPSW2 then
               end
               timer.performWithDelay(2000, gotoMakeboard)
     end
-else
-
-        reaction.text = "確認用パスワードが違います"
-        reaction.isVisible = true
-
-        end --パス確認if文を閉じるend
-    end -- パスの長さ確認if文を閉じるend
+    else
+      reaction.text = "確認用パスワードが違います"
+      reaction.isVisible = true
+    end
+  end
 end
 
 -- 戻るボタンが押されたらログイン画面に戻る
 local function onBackBtnRelease()
-	composer.gotoScene( "login", "fromBottom", 500 )
+	composer.gotoScene( "login", "fromLeft", 500 )
 	return true
 end
 
@@ -110,11 +108,16 @@ function scene:create( event )
   bg.anchorY = 0
   bg:setFillColor( 1 )
 
-  -- タイトル設定
-  title   = display.newText( "新規アカウント作成", 0, 0, native.systemFont, 32 ) -- ページ上部にタイトルを表示
-  title.x = _W / 2
-  title.y = 70
-  title:setFillColor( 0 )
+  -- バー設定
+  bar   = display.newRect(0, 0, _W, _H/7)
+  bar.x = _W/2
+  bar.y = -8
+  bar:setFillColor(0.22, 0.81, 0.87)
+
+  barTitle    = display.newText("新規アカウント作成", 0, 0, native.systemFont, 24)
+  barTitle.x  = _W / 2
+  barTitle.y  = 5
+  barTitle:setFillColor( 0 )
 
   -- テキスト設定
   emailHelp         = display.newText( "e-mailAddress:", _W/6, _H/4  , native.systemFont, 26 )
@@ -133,24 +136,23 @@ function scene:create( event )
   PSW2Help:setTextColor(0,0,0)
 
 
-
   -- ボタン設定
   registrationBtn = widget.newButton{
     label           = "登録メールを送信する",
     labelColor      = { default={255}, over={128} },
-    defaultFile     = "btn.png",
-    overFile        = "btnover.png",
+    defaultFile     = "imgs/apps/btn.png",
+    overFile        = "imgs/apps/btnover.png",
     width           = _W/3*2,
     height          = _H/8,
     emboss          = true,
     onRelease       = onRegistrationBtnRelease
   }
   registrationBtn.x = _W/2
-  registrationBtn.y = _H /6 *5
+  registrationBtn.y = _H /6 * 5
 
   back = widget.newButton{
-    defaultFile  = "back-before.png",
-    overFile     = "back.png",
+    defaultFile  = "imgs/apps/back-before.png",
+    overFile     = "imgs/apps/back.png",
     width        = 50,
     height       = 50,
     emboss       = true,
@@ -159,11 +161,12 @@ function scene:create( event )
   back.anchorX   = 0
   back.anchorY   = 0
   back.x         = 0
-  back.y         = 0
+  back.y         = -20
 
 
   sceneGroup:insert( bg )
-  sceneGroup:insert( title )
+  sceneGroup:insert( bar )
+	sceneGroup:insert( barTitle )
   sceneGroup:insert( back )
   sceneGroup:insert( emailHelp )
   sceneGroup:insert( PSWHelp )

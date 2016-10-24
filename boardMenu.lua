@@ -46,8 +46,8 @@ function scene:create( event )
 
 	-- ボタン設定
 	backBtn = widget.newButton{
-		defaultFile 			= "back-before.png",
-		overFile 					= "back.png",
+		defaultFile 			= "imgs/apps/back-before.png",
+		overFile 					= "imgs/apps/back.png",
 		width 						= 50,
 		height 						= 50,
 		emboss 						= true,

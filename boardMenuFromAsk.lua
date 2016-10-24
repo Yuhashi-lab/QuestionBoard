@@ -52,8 +52,8 @@ function scene:create( event )
 
 	-- ボタン設定
 	back = widget.newButton{
-		defaultFile 	= "back-before.png",
-		overFile 			= "back.png",
+		defaultFile 	= "imgs/apps/back-before.png",
+		overFile 			= "imgs/apps/back.png",
 		width 				= 50,
 		height 				= 50,
 		emboss 				= true,
@@ -65,8 +65,8 @@ function scene:create( event )
 	back.y 					= 0
 
 	askBtn = widget.newButton{
-	  defaultFile 	= "ask.png",
-	  overFile		 	= "ask.png",
+	  defaultFile 	= "imgs/apps/ask.png",
+	  overFile		 	= "imgs/apps/ask.png",
 	  width 				= 50,
 		height 				= 50,
 	  emboss 				= true,

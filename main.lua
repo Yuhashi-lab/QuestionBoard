@@ -26,7 +26,7 @@ bg.x  = _W/2
 bg.y  = _H/2
 bg:setFillColor( 1, 1, 1 )
 
-logo    = display.newImage("Splash.png", 10, 20)
+logo    = display.newImage("imgs/apps/Splash.png", 10, 20)
 logo.x  = _W/2
 logo.y  = _H/2 + 50
 

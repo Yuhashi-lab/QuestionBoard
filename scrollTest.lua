@@ -105,8 +105,8 @@ function scene:create( event )	local sceneGroup = self.view
 	--遷移ボタン	LoginBtn = widget.newButton{
 		label 			= "ログイン",
 		labelColor 	= { default={255}, over={128} },
-		defaultFile = "btn.png",
-		overFile 		= "btnover.png",
+		defaultFile = "imgs/apps/btn.png",
+		overFile 		= "imgs/apps/btnover.png",
 		width 			= _W / 3 * 2,
 		height 			= _H / 8,
 		emboss 			= true,
@@ -117,8 +117,8 @@ function scene:create( event )	local sceneGroup = self.view
 
   newAccountBtn = widget.newButton{		label 				= "新規入会",
 		labelColor 		= { default={0}, over={128} },
-		defaultFile 	= "btn.png",
-		overFile			= "btnover.png",
+		defaultFile 	= "imgs/apps/btn.png",
+		overFile			= "imgs/apps/btnover.png",
 		width 				= _W / 3 * 2,
 		height	 			= _H / 16,
 		emboss 				= true,

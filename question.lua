@@ -82,8 +82,8 @@ function scene:create( event )
   registrationBtn = widget.newButton{
   	label           = "質問を投稿する",
     labelColor      = { default={255}, over={128} },
-    defaultFile     = "btn.png",
-  	overFile        = "btnover.png",
+    defaultFile     = "imgs/apps/btn.png",
+  	overFile        = "imgs/apps/btnover.png",
   	width           = _W/3*2,
     height          = _H/8,
     emboss          = true,
@@ -93,8 +93,8 @@ function scene:create( event )
   registrationBtn.y = _H /6 *5
 
   backBtn = widget.newButton{
-  	defaultFile   = "back-before.png",
-  	overFile      = "back.png",
+  	defaultFile   = "imgs/apps/back-before.png",
+  	overFile      = "imgs/apps/back.png",
     width         = 50,
     height        = 50,
     emboss        = true,

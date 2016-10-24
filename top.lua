@@ -48,8 +48,8 @@ function scene:create( event )
 	AskBtn = widget.newButton{
 		label 			= "質問をする",
 		labelColor 	= { default={255}, over={128} },
-		defaultFile = "btn.png",
-		overFile 		= "btnover.png",
+		defaultFile = "imgs/apps/btn.png",
+		overFile 		= "imgs/apps/btnover.png",
 		width 			= _W/3*2,
 		height 			= _H/6,
 		emboss 			= true,
@@ -61,8 +61,8 @@ function scene:create( event )
 	LoginBtn = widget.newButton{
 		label 			= "質問板作成",
 		labelColor 	= { default={255}, over={128} },
-		defaultFile = "btn.png",
-		overFile 		= "btnover.png",
+		defaultFile = "imgs/apps/btn.png",
+		overFile 		= "imgs/apps/btnover.png",
 		width 			= _W/3*2,
 		height 			= _H/6,
 		emboss 			= true,
