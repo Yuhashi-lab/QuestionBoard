@@ -5,6 +5,7 @@ local composer = require( "composer" )
 local scene = composer.newScene()
 local json = require "json" -- test
 local http = require("socket.http") -- test
+local widget = require( "widget" )
 
 -- 定数
 local _W = display.viewableContentWidth
@@ -28,6 +29,7 @@ bg:setFillColor( 1, 1, 1 )
 logo    = display.newImage("Splash.png", 10, 20)
 logo.x  = _W/2
 logo.y  = _H/2 + 50
+
 
 
 -- スプラッシュを閉じる

@@ -19,10 +19,10 @@ local bg							--背景
 local title 					--タイトル
 
 local boardNameHelp		-- "ボードタイトル:"テキスト
-local categoryHelp 		-- "カテゴリー:"テキスト
+local detailHelp 		-- "詳細:"テキスト
 
 local boardNameField 	-- ボード名を入力させるテキストフィールド
-local categoryField		-- カテゴリーを入力させるテキストフィールド
+local detailField
 
 local makeBtn 				-- "作成"ボタン
 local back 						-- 戻るボタン
@@ -31,15 +31,15 @@ local back 						-- 戻るボタン
 -- 作成ボタンが押された場合に新しい質問板画面へ
 local function onMakeBtnBtnRelease()
 	boardName = boardNameField.text
-	category = categoryField.text
+	detail = detailField.text
 
 	composer.gotoScene( "boardMenu", "fromBottom", 500 )
 	return true
 end
 
--- 戻るボタンが押されたらログイン画面へ
+-- 戻るボタンが押されたらトップ画面へ
 local function onBackBtnRelease()
-	composer.gotoScene( "login", "fromBottom", 500 )
+	composer.gotoScene( "top", "fromBottom", 500 )
 	return true
 end
 
@@ -65,10 +65,10 @@ function scene:create( event )
 	boardNameHelp.anchorY = 0
 	boardNameHelp:setTextColor(0,0,0)
 
-	categoryHelp 				 	= display.newText( "カテゴリー：", _W/6, _H/2 - 50, native.systemFont, 26 )
-	categoryHelp.anchorX 	= 0
-	categoryHelp.anchorY 	= 0
-	categoryHelp:setTextColor(0,0,0)
+	detailHelp          = display.newText( "詳細説明:", _W/6, _H/2 - 50, native.systemFont, 26 )
+	detailHelp.anchorX  = 0
+	detailHelp.anchorY  = 0
+	detailHelp:setTextColor(0,0,0)
 
 	-- ボタン設定
 	makeBtn = widget.newButton{
@@ -82,7 +82,7 @@ function scene:create( event )
 		onRelease 	= onMakeBtnBtnRelease
 	}
 	makeBtn.x 		= _W * 0.5
-	makeBtn.y 		= _H / 3 * 2
+	makeBtn.y 		= _H / 3 * 2 + 70
 
 	back = widget.newButton{
 		defaultFile 	= "back-before.png",
@@ -101,7 +101,7 @@ function scene:create( event )
 	sceneGroup:insert( title )
 	sceneGroup:insert( makeBtn )
   sceneGroup:insert( boardNameHelp )
-  sceneGroup:insert( categoryHelp )
+	sceneGroup:insert( detailHelp )
   sceneGroup:insert( back )
 
 end
@@ -114,10 +114,13 @@ function scene:show( event )
 
 		-- 入力フィールド設定
 		boardNameField 	= native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16)
-		categoryField 	= native.newTextField( 	_W/2, _H/2, _W/3*2, _H/16)
+
+		detailField            = native.newTextBox( _W/2, _H/3*2 - 30, _W/3*2, _H/4)
+		detailField.size       = 20
+		detailField.isEditable = true
 
 		sceneGroup:insert( boardNameField )
-		sceneGroup:insert( categoryField )
+		sceneGroup:insert( detailField )
 
 	elseif phase == "did" then
 
@@ -132,9 +135,8 @@ function scene:hide( event )
 		if boardNameField then
 			boardNameField:removeSelf()
 		end
-
-		if categoryField then
-			categoryField:removeSelf()
+		if detailField then
+			detailField:removeSelf()
 		end
 
 	elseif phase == "did" then

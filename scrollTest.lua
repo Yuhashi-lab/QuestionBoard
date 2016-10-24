@@ -22,6 +22,7 @@ local emailField						--email入力フィールドlocal PSWField					--パス�
 
 local LoginBtn 					-- "ログイン"ボタン
 local newAccountBtn 		-- "新規入会"ボタン
+local scrollView
 local backBtn 					-- 戻るボタン
 
 -- widget eventlocal function getTokens()
@@ -60,7 +61,7 @@ local function onLoginBtnRelease(event)-- ログインボタンを押された�
             flash.text = "Failed"
             flash.isVisible = true
         else
-            composer.gotoScene("top")
+            composer.gotoScene("makeBoard")
         end
 end
 
@@ -71,6 +72,17 @@ end
 
 function scene:create( event )	local sceneGroup = self.view
 
+  scrollView = widget.newScrollView(
+      {
+          top = 100,
+          left = 10,
+          width = 300,
+          height = 400,
+          scrollWidth = _W,
+          scrollHeight = _H,
+
+      }
+  )
 	-- 背景設定
 	bg 					= display.newRect( 0, 0, _W, _H )
 	bg.anchorX 	= 0
@@ -113,20 +125,22 @@ function scene:create( event )	local sceneGroup = self.view
 		onRelease 		= onNewAccountBtnRelease
 	}
 
-  newAccountBtn.x = _W*0.5
-  newAccountBtn.y = _H/3*2+50
+
+
+
+  newAccountBtn.x = _W*0.5  newAccountBtn.y = _H/3*2+50
 
 	sceneGroup:insert( bg )	sceneGroup:insert( title )
 	sceneGroup:insert( LoginBtn )
   sceneGroup:insert( emailHelp )
   sceneGroup:insert( PSWHelp )
   sceneGroup:insert( newAccountBtn )
-
+  sceneGroup:insert( scrollView )
 
   flash = display.newText("", _W/2,_H /6 *5 + 50, native.systemFont, 12)  flash:setFillColor( 0, 0, 0 )
   flash.isVisible = false
 
-  sceneGroup:insert( flash )
+  sceneGroup:insert( flash )  scrollView:insert( bg )  scrollView:insert( title )  scrollView:insert( LoginBtn )
 end
 
 function scene:show( event )	local sceneGroup = self.view
