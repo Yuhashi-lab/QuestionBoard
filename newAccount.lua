@@ -3,13 +3,15 @@
 -- ライブラリ
 local composer = require( "composer" )
 local widget = require "widget"
+local http = require("socket.http")
+local ltn12 = require'ltn12'
 
 -- 定数
 local _W = display.viewableContentWidth
 local _H = display.viewableContentHeight
 
 -- 変数
-local inputID           --入力ID保存用
+local inputEmail           --入力Email保存用
 local inputPSW          --入力パスワード保存用
 local inputPSW2         --入力パスワード(確認)保存用
 
@@ -33,21 +35,63 @@ local registrationBtn   -- "登録メールを送信する""ボタン
 local back              -- 戻るボタン
 
 
+
 -- 登録ボタンが押されたらフラッシュを出してログイン画面に戻る
 local function onRegistrationBtnRelease()
-  inputID   = emailField.text
+  inputEmail   = emailField.text
   inputPSW  = PSWField.text
   inputPSW2 = PSW2Field.text
 
-  local function closePage()
-      reaction.text = nil
-      composer.gotoScene( "login", "fromBottom", 500 )
-  end
-  reaction = display.newText("確認メールを送信しました。元のページへ戻ります。",_W/2,_H /6 *5 + 50, native.systemFont, 12)
-  reaction:setTextColor(0,0,0)
-  timer.performWithDelay(2000, closePage)--　TODO:funcで入れれない？
 
-	return true
+if inputPSW:len() < 5 then
+
+      reaction.text = "パスワードは6桁以上です"
+      reaction.isVisible = true
+
+else
+if inputPSW == inputPSW2 then
+  -- http request
+     local reqbody = "email="..inputEmail.."&password="..inputPSW.."&password_confirmation="..inputPSW2
+     respbody = {}
+     local body, code, headers, status = http.request{
+         url = "http://localhost:3000/api/v1/auth",
+         method = "POST",
+         headers =
+         {
+             ["Accept"] = "*/*",
+             ["Content-Type"] = "application/x-www-form-urlencoded",
+             ["content-length"] = string.len(reqbody)
+         },
+         source = ltn12.source.string(reqbody),
+         sink = ltn12.sink.table(respbody)
+     }
+     print(table.concat(respbody))
+     -- get user info
+     userInfo["uId"]         = headers["uid"]
+     userInfo["accessToken"] = headers["access-token"]
+     userInfo["Client"]      = headers["client"]
+
+     if(userInfo["uId"]==nil or userInfo["accessToken"]==nil or userInfo["Client"]==nil) then
+         reaction.text = "Failed"
+         reaction.isVisible = true
+     else
+          reaction.text = "ご登録ありがとうございました。"
+          reaction.isVisible = true
+              -- 戻るボタンが押されたらログイン画面に戻る
+              local function gotoMakeboard()
+                reaction.isVisible = false
+              	composer.gotoScene( "makeBoard", "fromBottom", 500 )
+              	return true
+              end
+              timer.performWithDelay(2000, gotoMakeboard)
+    end
+else
+
+        reaction.text = "確認用パスワードが違います"
+        reaction.isVisible = true
+
+        end --パス確認if文を閉じるend
+    end -- パスの長さ確認if文を閉じるend
 end
 
 -- 戻るボタンが押されたらログイン画面に戻る
@@ -78,7 +122,7 @@ function scene:create( event )
   emailHelp.anchorY = 0
   emailHelp:setTextColor(0,0,0)
 
-  PSWHelp         = display.newText( "Pasword:", _W/6, _H/2 - 50, native.systemFont, 26 )
+  PSWHelp         = display.newText( "Pasword(6桁以上):", _W/6, _H/2 - 50, native.systemFont, 26 )
   PSWHelp.anchorX = 0
   PSWHelp.anchorY = 0
   PSWHelp:setTextColor(0,0,0)
@@ -125,6 +169,12 @@ function scene:create( event )
   sceneGroup:insert( PSWHelp )
   sceneGroup:insert( PSW2Help )
   sceneGroup:insert( registrationBtn )
+
+  reaction = display.newText("", _W/2,_H /6 *5 + 50, native.systemFont, 12)
+  reaction:setTextColor(0,0,0)             -- エラー文
+  reaction.isVisible = false
+
+  sceneGroup:insert( reaction )
 
 end
 

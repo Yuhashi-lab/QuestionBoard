@@ -1,56 +1,106 @@
--- ログイン画面
+-- ログイン画面
+-- ライブラリ
+local composer = require( "composer" )local widget = require "widget"
+local json = require "json"
+local http = require("socket.http")
+local ltn12 = require'ltn12'
 
--- ライブラリ
-local composer = require( "composer" )
-local widget = require "widget"
-
--- 定数
-local _W = display.viewableContentWidth 		-- 画面の幅の取得
+-- 定数local _W = display.viewableContentWidth 		-- 画面の幅の取得
 local _H = display.viewableContentHeight 		-- 画面の高さの取得
 
--- 変数
-local inputID						--入力されたID取得用
+-- 変数local inputID						--入力されたID取得用
 local inputPSW					--入力されたパスワード取得用
 
--- オブジェクト
-local scene = composer.newScene()
-
+-- オブジェクトlocal scene = composer.newScene()
 local bg								--背景
 local title							--タイトルテキスト
-
-local IDHelp						--"ID:"テキスト
+local emailHelp						--"email:"テキスト
 local PSWHelp						--"Password:"テキスト
+local flash             --"ログイン失敗"テキスト
 
-local IDField						--ID入力フィールド
-local PSWField					--パスワード入力フィールド
+local emailField						--email入力フィールドlocal PSWField					--パスワード入力フィールド
 
 local LoginBtn 					-- "ログイン"ボタン
 local newAccountBtn 		-- "新規入会"ボタン
 local backBtn 					-- 戻るボタン
 
--- 戻るボタンを押された際にトップ画面へ
-local function onBackBtnRelease()
-	composer.gotoScene( "top", "fromBottom", 500 )
-	return true
+-- widget eventlocal function getTokens()
+
+    -- get text    local emailText = emailField.text    local passwordText = PSWField.text
+
+    -- ログインAPIのリクエストを送る    local reqbody = "email="..emailText.."&password="..passwordText
+    local respbody = {}
+    local body, code, headers, status = http.request{
+        url = "http://localhost:3000/api/v1/auth/sign_in",
+        method = "POST",
+        headers =
+        {
+            ["Accept"] = "*/*",
+            ["Content-Type"] = "application/x-www-form-urlencoded",
+            ["content-length"] = string.len(reqbody)
+        },
+        source = ltn12.source.string(reqbody),
+        sink = ltn12.sink.table(respbody)
+    }
+
+    -- get user info
+
+    userInfo["uId"]         = headers["uid"]
+    userInfo["accessToken"] = headers["access-token"]
+    userInfo["Client"]      = headers["client"]
+print(respbody)
+local concatRespbody = table.concat(respbody)
+print(concatRespbody)
+local testJson = json.encode(concatRespbody)
+print(testJson)
+local invitation = json.decode(testJson)["is_company"]
+print(invitation)
+local invitation3 = json.decode(concatRespbody)["is_company"]
+print(invitation3)
+--local invitation2 = json.decode(respbody)["is_company"]
+--print(invitation2)
+
 end
 
--- ログインボタンを押された場合に板新設画面へ
-local function onLoginBtnRelease()
-	inputID 	= IDField.text
-	inputPSW 	= PSWField.text
-
-	composer.gotoScene( "makeBoard", "fromBottom", 500 )
-	return true
+local function isCompany()
+    -- http request
+    local reqbody = ""
+    respbody = {}
+    local body, code, headers, status = http.request{
+        url = "http://localhost:3000/api/v1/users/show",
+        method = "GET",
+        headers =
+        {
+            ["Accept"] = "*/*",
+            ["Content-Type"] = "application/x-www-form-urlencoded",
+            ["Uid"] = userInfo["uId"],
+            ["Access-token"] = userInfo["accessToken"],
+            ["Client"] = userInfo["Client"],
+            ["content-length"] = string.len(reqbody)
+        },
+        source = ltn12.source.string(reqbody),
+        sink = ltn12.sink.table(respbody)
+    }
+    local invitation = json.decode(respbody)["is_company"]
+ print(invitation)
 end
 
--- 新規入会ボタンを押された場合にアカウント作成画面へ
-local function onNewAccountBtnRelease()
-	composer.gotoScene( "newAccount", "fromBottom", 500 )
-	return true
+local function onLoginBtnRelease(event)-- ログインボタンを押された場合に正しいアカウントであれば板新設画面へ        getTokens()
+      --  isCompany()
+        if(userInfo["uId"]==nil or userInfo["accessToken"]==nil or userInfo["Client"]==nil) then
+            flash.text = "Failed"
+            flash.isVisible = true
+        else
+            composer.gotoScene("makeBoard")
+        end
 end
 
-function scene:create( event )
-	local sceneGroup = self.view
+-- 新規入会ボタンを押された場合にアカウント作成画面へlocal function onNewAccountBtnRelease()
+	composer.gotoScene( "newAccount", "fromRight", 500 )
+end
+
+
+function scene:create( event )	local sceneGroup = self.view
 
 	-- 背景設定
 	bg 					= display.newRect( 0, 0, _W, _H )
@@ -58,26 +108,20 @@ function scene:create( event )
 	bg.anchorY 	= 0
 	bg:setFillColor( 1 )
 
-	-- タイトル設定
-	title 	= display.newText( "Login", 0, 0, native.systemFont, 32 )
+	-- タイトル設定	title 	= display.newText( "Questionboard\nLogin", 0, 0, native.systemFont, 32 )
 	title.x = _W / 2
 	title.y = 70
 	title:setFillColor( 0 )
 
+	--入力フィールド用テキスト	emailHelp 					= display.newText( "e-mail:", _W / 6, _H / 4 , native.systemFont, 26 )
+	emailHelp.anchorX 	= 0
+	emailHelp.anchorY 	= 0
+	emailHelp:setTextColor(0,0,0)
 
-	--入力フィールド用テキスト
-	IDHelp 					= display.newText( "ID:", _W / 6, _H / 4 , native.systemFont, 26 )
-	IDHelp.anchorX 	= 0
-	IDHelp.anchorY 	= 0
-	IDHelp:setTextColor(0,0,0)
-
-	PSWHelp 				= display.newText( "Password:", _W / 6, _H / 2 - 50, native.systemFont, 26 )
-	PSWHelp.anchorX = 0
-	PSWHelp.anchorY = 0
+	PSWHelp 				= display.newText( "Password:", _W / 6, _H / 2 - 50, native.systemFont, 26 )	PSWHelp.anchorX = 0	PSWHelp.anchorY = 0
 	PSWHelp:setTextColor(0,0,0)
 
-	--遷移ボタン
-	LoginBtn = widget.newButton{
+	--遷移ボタン	LoginBtn = widget.newButton{
 		label 			= "ログイン",
 		labelColor 	= { default={255}, over={128} },
 		defaultFile = "btn.png",
@@ -87,11 +131,10 @@ function scene:create( event )
 		emboss 			= true,
 		onRelease 	= onLoginBtnRelease
 	}
-    LoginBtn.x = _W*0.5
-    LoginBtn.y = _H/3*2
 
-  newAccountBtn = widget.newButton{
-		label 				= "新規入会",
+    LoginBtn.x = _W*0.5    LoginBtn.y = _H/3*2
+
+  newAccountBtn = widget.newButton{		label 				= "新規入会",
 		labelColor 		= { default={0}, over={128} },
 		defaultFile 	= "btn.png",
 		overFile			= "btnover.png",
@@ -100,83 +143,54 @@ function scene:create( event )
 		emboss 				= true,
 		onRelease 		= onNewAccountBtnRelease
 	}
-  newAccountBtn.x = _W*0.5
-  newAccountBtn.y = _H/3*2+50
 
-	backBtn = widget.newButton{
-		defaultFile 		= "back-before.png",
-		overFile 				= "back.png",
-		width 					= 50,
-		height 					= 50,
-		emboss 					= true,
-		onRelease 			= onBackBtnRelease
-	}
-		backBtn.anchorX = 0
-		backBtn.anchorY = 0
-		backBtn.x 			= 0
-		backBtn.y 			= 0
+  newAccountBtn.x = _W*0.5  newAccountBtn.y = _H/3*2+50
 
-	sceneGroup:insert( bg )
-	sceneGroup:insert( title )
+	sceneGroup:insert( bg )	sceneGroup:insert( title )
 	sceneGroup:insert( LoginBtn )
-
-  sceneGroup:insert( IDHelp )
+  sceneGroup:insert( emailHelp )
   sceneGroup:insert( PSWHelp )
   sceneGroup:insert( newAccountBtn )
-	sceneGroup:insert( backBtn )
 
-end
+  flash = display.newText("", _W/2,_H /6 *5 + 50, native.systemFont, 12)  flash:setFillColor( 0, 0, 0 )
+  flash.isVisible = false
 
-function scene:show( event )
-	local sceneGroup = self.view
+  sceneGroup:insert( flash )
+end
+
+function scene:show( event )	local sceneGroup = self.view
 	local phase = event.phase
-
 	if phase == "will" then
 
-		--入力フィールド
-		IDField 					= native.newTextField( _W/2, _H/4+50, _W/3*2, _H/16)
+		--入力フィールド		emailField 					= native.newTextField( _W/2, _H/4+50, _W/3*2, _H/16)
 		PSWField 					= native.newTextField( _W/2, _H/2, _W/3*2, _H/16)
 		PSWField.isSecure = true
 
-		sceneGroup:insert( IDField )
-	  sceneGroup:insert( PSWField )
+		sceneGroup:insert( emailField )	  sceneGroup:insert( PSWField )
 
-	elseif phase == "did" then
+	elseif phase == "did" then
+	endend
 
-	end
-end
-
-function scene:hide( event )
-	local sceneGroup = self.view
-	local phase = event.phase
-
-	if event.phase == "will" then
-		if IDField then
-				IDField:removeSelf()
+function scene:hide( event )	local sceneGroup = self.view
+	local phase = event.phase
+	if event.phase == "will" then		if emailField then
+				emailField:removeSelf()
 		end
-
-		if PSWField then
+	if PSWField then
 				PSWField:removeSelf()
 		end
-	elseif phase == "did" then
 
-	end
-end
+	elseif phase == "did" then
+	endend
 
-function scene:destroy( event )
-	local sceneGroup = self.view
+function scene:destroy( event )	local sceneGroup = self.view
 
-end
+end
+----------------------------------------------------------------------------------- Listener setup
 
-
----------------------------------------------------------------------------------
-
--- Listener setup
-scene:addEventListener( "create", scene )
-scene:addEventListener( "show", scene )
+scene:addEventListener( "create", scene )scene:addEventListener( "show", scene )
 scene:addEventListener( "hide", scene )
 scene:addEventListener( "destroy", scene )
-
 -----------------------------------------------------------------------------------------
 
-return scene
+return scene

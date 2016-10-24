@@ -19,13 +19,13 @@ local LoginBtn		--"質問版作成"ボタン
 
 -- "質問をする"が押された場合は板検索画面へ
 local function onAskBtnRelease()
-	composer.gotoScene( "ask", "fromBottom", 500 )
+	composer.gotoScene( "ask", "crossFade", 500 )
 	return true
 end
 
 -- ”質問板作成”が押された場合はログイン画面へ
 local function onLoginBtnRelease()
-	composer.gotoScene( "login", "fromBottom", 500 )
+	composer.gotoScene( "login", "crossFade", 500 )
 	return true
 end
 

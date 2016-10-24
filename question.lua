@@ -119,12 +119,13 @@ function scene:show( event )
 	local phase = event.phase
 
 	if phase == "will" then
-    
-    --入力フィールド設定
-    titleField          = native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16)
 
-    questionField       = native.newTextBox( _W/2, _H/3*2 - 30, _W/3*2, _H/4)
-    questionField.size  = 12
+    --入力フィールド設定
+    titleField               = native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16)
+
+    questionField            = native.newTextBox( _W/2, _H/3*2 - 30, _W/3*2, _H/4)
+    questionField.size       = 12
+    questionField.isEditable = true
 
     sceneGroup:insert( titleField )
     sceneGroup:insert( questionField )
