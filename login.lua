@@ -16,13 +16,11 @@ local inputPSW					--入力されたパスワード取得用
 
 local bg								--背景
 
-local flash             --"ログイン失敗"テキスト
-
 -- widget eventlocal function getTokens()
 
-    -- get text    local emailText = mui.getWidgetProperty("email-text", "value")    local passwordText = mui.getWidgetProperty("pwd-text", "value")
+    -- get text    local emailText     = mui.getWidgetProperty("email-text", "value")    local passwordText  = mui.getWidgetProperty("pwd-text", "value")
 
-    -- ログインAPIのリクエストを送る    local reqbody = "email="..emailText.."&password="..passwordText
+    -- ログインAPIのリクエストを送る    -- TODOインジケータ    local reqbody = "email="..emailText.."&password="..passwordText
     local respbody = {}
     local body, code, headers, status = http.request{
         url = "http://questionboardweb.herokuapp.com/api/v1/auth/sign_in",
@@ -43,16 +41,27 @@ local flash             --"ログイン失敗"テキスト
     userInfo["accessToken"] = headers["access-token"]
     userInfo["Client"]      = headers["client"]
 
-    local user = json.decode(table.concat(respbody))["data"]
-    print(user["id"])
 end
 
 -- ログインボタンを押された場合に正しいアカウントであれば板新設画面へ
 local function onLoginBtnRelease(event)
   getTokens()
   if(userInfo["uId"]==nil or userInfo["accessToken"]==nil or userInfo["Client"]==nil) then
-    flash.text = "Failed"
-    flash.isVisible = true
+    mui.newToast({
+      name  = "toast",
+      text      = "ログインに失敗しました",
+      radius    = 0,
+      width     = _W+100,
+      height    = mui.getScaleVal(50),
+      font      = native.systemFont,
+      fontSize  = mui.getScaleVal(24),
+      fillColor = { 0, 0, 0, 1 },
+      textColor = { 1, 1, 1, 1 },
+      top       = _H - 30,
+      easingIn  = 0,
+      easingOut = 500,
+      callBack  = function() end
+    })
   else
     composer.gotoScene("top")
   end
@@ -72,10 +81,6 @@ function scene:create( event )	local sceneGroup = self.view
 	bg:setFillColor( 1 )
 
 	sceneGroup:insert( bg )
-  flash = display.newText("", _W/2,_H /6 *5 + 50, native.systemFont, 12)  flash:setFillColor( 0, 0, 0 )
-  flash.isVisible = false
-
-  sceneGroup:insert( flash )
 end
 function scene:show( event )	local sceneGroup = self.view
 	local phase = event.phase
@@ -159,10 +164,10 @@ function scene:show( event )	local sceneGroup = self.view
     mui.newRoundedRectButton({
     	name       = "login-btn",
     	text       = "ログイン",
-    	width      = mui.getScaleVal(400),
+    	width      = mui.getScaleVal(200),
     	height     = mui.getScaleVal(80),
     	radius     = mui.getScaleVal(10),
-    	x          = _W * 0.5,
+    	x          = _W * 0.75,
     	y          = _H / 3 * 2,
     	font       = native.systemFont,
     	fillColor  = { 0.63, 0.81, 0.181, 1 },
@@ -175,10 +180,10 @@ function scene:show( event )	local sceneGroup = self.view
     mui.newRoundedRectButton({
       name       = "regist-btn",
       text       = "新規登録",
-      width      = mui.getScaleVal(400),
+      width      = mui.getScaleVal(200),
       height     = mui.getScaleVal(50),
       radius     = mui.getScaleVal(10),
-      x          = _W * 0.5,
+      x          = _W * 0.75,
       y          = _H / 3 * 2 + 50,
       font       = native.systemFont,
       fillColor  = { 0.63, 0.81, 0.181, 1 },
