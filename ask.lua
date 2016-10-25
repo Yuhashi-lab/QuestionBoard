@@ -3,6 +3,7 @@
 -- ライブラリ
 local composer = require( "composer" )
 local widget = require "widget"
+local mui = require( "materialui.mui" )
 
 -- 定数
 local _W = display.viewableContentWidth
@@ -16,16 +17,7 @@ local inputCat 				--入力されたカテゴリ保存用
 local scene = composer.newScene()
 
 local bg 							-- 背景
-local title 					--タイトル
 local searchBtn 			-- "検索"ボタン
-local backBtn 				-- 戻るボタン
-
-local nameHelp				-- "板の名前を検索"テキスト
-local categoryHelp		-- ”カテゴリー名で検索”テキスト
-
-local nameField				-- 質問板を入力させるテキストフィール
-local categoryField 	-- 板のカテゴリを入力させるテキストフィールド
-
 
 -- 戻るボタンを押された場合はトップ画面へ
 local function onBackBtnRelease()
@@ -35,8 +27,7 @@ end
 
 -- 検索ボタンを押された場合に板検索一覧の表示
 local function onSearchBtnRelease()
-	inputName = nameField.text -- 入力された名前
-	inputCat = categoryField.text -- 入力されたカテゴリー名
+	inputName = mui.getWidgetProperty("name-text", "value")
 
 	composer.gotoScene( "searchResult", "fromBottom", 500 )
 	return true
@@ -51,57 +42,7 @@ function scene:create( event )
 	bg.anchorY 	= 0
 	bg:setFillColor( 1 )
 
-	-- タイトル設定
-	title 	= display.newText( "ボード検索", 0, 0, native.systemFont, 32 )
-	title.x = _W/2
-	title.y = 70
-	title:setFillColor( 0 )
-
-	-- テキスト設定
-	nameHelp 					= display.newText( "板の名前を検索", _W/6, _H/4 , native.systemFont, 26 )
-	nameHelp.anchorX 	= 0
-	nameHelp.anchorY 	= 0
-	nameHelp:setTextColor(0,0,0)
-
-	categoryHelp 					= display.newText( "カテゴリー名で検索", _W/6, _H/2 - 50, native.systemFont, 26 )
-	categoryHelp.anchorX 	= 0
-	categoryHelp.anchorY 	= 0
-	categoryHelp:setTextColor(0,0,0)
-
-
-
-	--ボタン設定
-	searchBtn = widget.newButton{
-		label 			= "検索",
-		labelColor 	= { default={255}, over={128} },
-		defaultFile = "imgs/apps/btn.png",
-		overFile 		= "imgs/apps/btnover.png",
-		width 			= _W/3*2, height = _H/8,
-		emboss 			= true,
-		onRelease 	= onSearchBtnRelease
-	}
-  searchBtn.x 	= _W*0.5
-  searchBtn.y 	= _H /3 *2
-
-	backBtn = widget.newButton{
-		defaultFile 		= "imgs/apps/back-before.png",
-		overFile 				= "imgs/apps/back.png",
-		width 					= 50,
-		height 					= 50,
-		emboss 					= true,
-		onRelease 			= onBackBtnRelease
-	}
-		backBtn.anchorX = 0
-		backBtn.anchorY = 0
-		backBtn.x 			= 0
-		backBtn.y 			= 0
-
 	sceneGroup:insert( bg )
-	sceneGroup:insert( title )
-	sceneGroup:insert( searchBtn )
-  sceneGroup:insert( nameHelp )
-  sceneGroup:insert( categoryHelp )
-	sceneGroup:insert( backBtn )
 
 end
 
@@ -111,14 +52,101 @@ function scene:show( event )
 
 	if phase == "will" then
 
-		-- 入力フィールド設定
-		nameField 		= native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16)
-		categoryField = native.newTextField( _W/2, _H/2, _W/3*2, _H/16)
-
-		sceneGroup:insert( nameField )
-		sceneGroup:insert( categoryField )
 
 	elseif phase == "did" then
+		mui.init()
+
+    -- navbar設定
+    mui.newNavbar({
+    	name             = "navbar",
+    	height           = mui.getScaleVal(100),
+    	left             = 0,
+    	top              = 0,
+    	fillColor        = { 0.63, 0.81, 0.181 },
+    	activeTextColor  = { 1, 1, 1, 1 },
+    	padding          = mui.getScaleVal(50),
+    })
+
+    navTextOps = {
+      x         = mui.getScaleVal(0),
+    	y         = mui.getScaleVal(0),
+      name      = "nav-text",
+      text      = "質問板検索",
+      align     = "center",
+      width     = mui.getScaleVal(200),
+      height    = mui.getScaleVal(50),
+      font      = native.systemFontBold,
+      fontSize  = mui.getScaleVal(40),
+      fillColor = { 1, 1, 1, 1 },
+    }
+    mui.newText(navTextOps)
+
+    mui.newImageRect({
+    	image  = "imgs/apps/back.png",
+    	name   = "back-btn",
+      width  = mui.getScaleVal(100),
+    	height = mui.getScaleVal(50),
+    })
+    local backBtn = mui.getWidgetBaseObject("back-btn")
+    backBtn:addEventListener("touch", onBackBtnRelease)
+    sceneGroup:insert( backBtn )
+
+    mui.attachToNavBar( "navbar", {
+      widgetName = "back-btn",
+      widgetType = "Image",
+      align      = "left",
+    })
+
+    mui.attachToNavBar( "navbar", {
+      widgetName = "nav-text",
+	    widgetType = "Text",
+	    align      = "left",
+    })
+
+		-- タイトルText設定
+    titleTextOps = {
+      y         = 85,
+      x         = _W / 2,
+      name      = "title-text",
+      text      = "質問板の名前で検索",
+      align     = "center",
+      width     = 400,
+      font      = native.systemFontBold,
+      fontSize  = mui.getScaleVal(48),
+      fillColor = { 0, 0, 0, 1 },
+    }
+    mui.newText(titleTextOps)
+
+		-- TextField設定
+		mui.newTextField({
+			name          = "name-text",
+		  labelText     = "板の名前:",
+	  	text          = "example:静岡大学経営論2016",
+		  font          = native.systemFont,
+	  	width         = mui.getScaleVal(400),
+		  height        = mui.getScaleVal(46),
+		  x             = _W / 2,
+	  	y             = _H / 2,
+		  activeColor   = { 0.63, 0.81, 0.181, 1 },
+		  inactiveColor = { 0.5, 0.5, 0.5, 1 },
+	  	callBack      = mui.textfieldCallBack
+		})
+
+		-- 検索ボタン
+    mui.newRoundedRectButton({
+    	name       = "search-btn",
+    	text       = "検索",
+    	width      = mui.getScaleVal(200),
+    	height     = mui.getScaleVal(80),
+    	radius     = mui.getScaleVal(10),
+    	x          = _W * 0.75,
+    	y          = _H / 3 * 2,
+    	font       = native.systemFont,
+    	fillColor  = { 0.63, 0.81, 0.181, 1 },
+    	textColor  = { 1, 1, 1 },
+    	touchpoint = true,
+    	callBack   = onSearchBtnRelease
+    })
 
 	end
 end
@@ -128,13 +156,7 @@ function scene:hide( event )
 	local phase = event.phase
 
 	if event.phase == "will" then
-		if nameField then
-        nameField:removeSelf()
-    end
-
-		if categoryField then
-		  categoryField:removeSelf()
-		end
+		mui.destroy()
 	elseif phase == "did" then
 
 
