@@ -1,8 +1,8 @@
 -- 閲覧、質問をしたいボードを選ばせる画面
 
 local composer = require( "composer" )
-
 local widget = require "widget"
+local mui = require( "materialui.mui" )
 
 -- 定数
 local _W = display.viewableContentWidth
@@ -12,10 +12,8 @@ local _H = display.viewableContentHeight
 local scene = composer.newScene()
 
 local bg					-- 背景
-local title				-- タイトル
 
 local DecideBtn		-- 質問板遷移用ボタン
-local back 				-- 前の画面に戻るボタン
 
 -- 質問板が押されたらその板の画面へ
 local function onDecideBtnRelease()
@@ -29,6 +27,27 @@ local function onBackBtnRelease()
 	return true
 end
 
+-- ScrollView listener
+local function scrollListener( event )
+
+    local phase = event.phase
+    if ( phase == "began" ) then print( "Scroll view was touched" )
+    elseif ( phase == "moved" ) then print( "Scroll view was moved" )
+    elseif ( phase == "ended" ) then print( "Scroll view was released" )
+    end
+
+    -- In the event a scroll limit is reached...
+    if ( event.limitReached ) then
+        if ( event.direction == "up" ) then print( "Reached bottom limit" )
+        elseif ( event.direction == "down" ) then print( "Reached top limit" )
+        elseif ( event.direction == "left" ) then print( "Reached right limit" )
+        elseif ( event.direction == "right" ) then print( "Reached left limit" )
+        end
+    end
+
+    return true
+end
+
 function scene:create( event )
 	local sceneGroup = self.view
 
@@ -37,12 +56,6 @@ function scene:create( event )
 	bg.anchorX 	= 0
 	bg.anchorY 	= 0
 	bg:setFillColor( 1 )
-
-	--タイトル設定
-	title 	= display.newText( "検索結果一覧 n件がヒットしました", 0, 0, native.systemFont, 14 ) -- ページ上部にタイトルを表示
-	title.x = display.contentWidth * 0.5
-	title.y = 70
-	title:setFillColor( 0 )
 
 	-- ボタン設定
 	DecideBtn = widget.newButton{
@@ -58,23 +71,8 @@ function scene:create( event )
 	DecideBtn.x 	= _W*0.5
 	DecideBtn.y 	= _H /3 *2
 
-	back = widget.newButton{
-		defaultFile 	= "imgs/apps/back-before.png",
-		overFile 			= "imgs/apps/back.png",
-		width 				= 50,
-		height 				= 50,
-		emboss 				= true,
-		onRelease 		= onBackBtnRelease
-	}
-		back.anchorX 	= 0
-		back.anchorY 	= 0
-		back.x 				= 0
-		back.y 				= 0
-
 	sceneGroup:insert( bg )
-	sceneGroup:insert( title )
 	sceneGroup:insert( DecideBtn )
-	sceneGroup:insert( back )
 end
 
 function scene:show( event )
@@ -83,6 +81,90 @@ function scene:show( event )
 
 	if phase == "will" then
 	elseif phase == "did" then
+		mui.init()
+
+    -- navbar設定
+    mui.newNavbar({
+    	name             = "navbar",
+    	height           = mui.getScaleVal(100),
+    	left             = 0,
+    	top              = 0,
+    	fillColor        = { 0.63, 0.81, 0.181 },
+    	activeTextColor  = { 1, 1, 1, 1 },
+    	padding          = mui.getScaleVal(50),
+    })
+
+    navTextOps = {
+      x         = mui.getScaleVal(0),
+    	y         = mui.getScaleVal(0),
+      name      = "nav-text",
+      text      = "検索結果",
+      align     = "center",
+      width     = mui.getScaleVal(200),
+      height    = mui.getScaleVal(50),
+      font      = native.systemFontBold,
+      fontSize  = mui.getScaleVal(40),
+      fillColor = { 1, 1, 1, 1 },
+    }
+    mui.newText(navTextOps)
+
+		mui.newImageRect({
+    	image  = "imgs/apps/back.png",
+    	name   = "back-btn",
+      width  = mui.getScaleVal(100),
+    	height = mui.getScaleVal(50),
+    })
+    local backBtn = mui.getWidgetBaseObject("back-btn")
+    backBtn:addEventListener("touch", onBackBtnRelease)
+    sceneGroup:insert( backBtn )
+
+    mui.attachToNavBar( "navbar", {
+      widgetName = "back-btn",
+      widgetType = "Image",
+      align      = "left",
+    })
+
+    mui.attachToNavBar( "navbar", {
+      widgetName = "nav-text",
+	    widgetType = "Text",
+	    align      = "left",
+    })
+
+    -- 検索結果Text設定
+    resultTextOps = {
+      y         = 85,
+      x         = _W / 2,
+      name      = "result-text",
+      text      = "検索結果n件がヒットしました",
+      align     = "center",
+      width     = 400,
+      font      = native.systemFont,
+      fontSize  = mui.getScaleVal(32),
+      fillColor = { 0, 0, 0, 1 },
+    }
+    mui.newText(resultTextOps)
+
+		local scrollView = widget.newScrollView(
+		    {
+		        top = 110,
+		        left = 0,
+		        width = _W,
+		        height = _H,
+		        scrollWidth = 0,
+		        scrollHeight = 1000,
+						horizontalScrollDisabled = true,
+		        listener = scrollListener
+		    }
+		)
+
+		-- Create a image and insert it into the scroll view
+		background 					= display.newRect( 0, 0, _W, _H )
+		background:setFillColor( 0 )
+		background.anchorX 	= 0
+		background.anchorY 	= 0
+		scrollView:insert( background )
+		sceneGroup:insert( scrollView )
+
 
 	end
 end
@@ -94,7 +176,8 @@ function scene:hide( event )
 	if event.phase == "will" then
 
 	elseif phase == "did" then
-			end
+		mui.destroy()
+	end
 end
 
 function scene:destroy( event )
