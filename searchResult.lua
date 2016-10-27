@@ -36,26 +36,6 @@ local function onBackBtnRelease()
 	return true
 end
 
--- ScrollView listener
-local function scrollListener( event )
-
-    local phase = event.phase
-    if ( phase == "began" ) then print( "Scroll view was touched" )
-    elseif ( phase == "moved" ) then print( "Scroll view was moved" )
-    elseif ( phase == "ended" ) then print( "Scroll view was released" )
-    end
-
-    -- In the event a scroll limit is reached...
-    if ( event.limitReached ) then
-        if ( event.direction == "up" ) then print( "Reached bottom limit" )
-        elseif ( event.direction == "down" ) then print( "Reached top limit" )
-        elseif ( event.direction == "left" ) then print( "Reached right limit" )
-        elseif ( event.direction == "right" ) then print( "Reached left limit" )
-        end
-    end
-
-    return true
-end
 
 function scene:create( event )
 	local sceneGroup = self.view
@@ -151,7 +131,20 @@ function scene:show( event )
 		   row.bg.anchorX = 0
 		   row.bg.anchorY = 0
 		   row.bg:setFillColor( 1 )
-		   row:insert( row.bg )
+
+			 row.btn	 				= display.newImageRect( "imgs/apps/ahead.png", 50, 50)
+			 row.btn.anchorX	= 0
+			 row.btn.anchorY	= 0
+			 row.btn.x				= _W - 50
+			 row.btn.y				= 0
+			 local function onBtnRelease()
+				 composer.setVariable("boardId", boards[id]["id"])
+				 composer.gotoScene( "boardMenuFromAsk", "fromRight", 500 )
+			 end
+			 row.btn:addEventListener("touch", onBtnRelease)
+
+			 row:insert( row.bg )
+			 row:insert( row.btn )
 
 		   if event.row.params then
 		       local name 	= event.row.params.name
@@ -167,7 +160,7 @@ function scene:show( event )
 		       row.detailText 				= display.newText(detail, 12, 0, native.systemFont, 12 )
 		       row.detailText.anchorX = 0
 		       row.detailText.anchorY = 0.5
-					 row.detailText.y 			= 40
+					 row.detailText.y 			= 43
 					 row.detailText.x 			= 42
 		       row.detailText:setFillColor( 0.5 )
 
@@ -186,7 +179,6 @@ function scene:show( event )
 			width 			= _H,
 			onRowRender = onRowRender,
 			onRowTouch 	= onRowTouch,
-			listener 		= scrollListener
 		})
 
 		-- Row挿入

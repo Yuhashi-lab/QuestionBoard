@@ -63,7 +63,7 @@ local function onLoginBtnRelease(event)
       callBack  = function() end
     })
   else
-    composer.gotoScene("top")
+    composer.gotoScene("top", "fromRight")
   end
 end
 

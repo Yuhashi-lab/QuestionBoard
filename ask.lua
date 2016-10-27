@@ -24,7 +24,7 @@ end
 -- 検索ボタンを押された場合に板検索一覧の表示
 local function onSearchBtnRelease()
 	composer.setVariable("inputSearchWord", mui.getWidgetProperty("name-text", "value"))
-	composer.gotoScene( "searchResult", "fromBottom", 500 )
+	composer.gotoScene( "searchResult", "fromRight", 500 )
 	return true
 end
 
