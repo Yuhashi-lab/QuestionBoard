@@ -3,6 +3,9 @@
 local composer = require( "composer" )
 local widget = require "widget"
 local mui = require( "materialui.mui" )
+local http = require("socket.http")
+local json = require "json"
+local ltn12 = require'ltn12'
 
 -- 定数
 local _W = display.viewableContentWidth
@@ -14,6 +17,12 @@ local scene = composer.newScene()
 local bg					-- 背景
 
 local DecideBtn		-- 質問板遷移用ボタン
+
+local function getBoards()
+	local data = http.request("http://questionboardweb.herokuapp.com/api/v1/boards/search/"..composer.getVariable("inputSearchWord"))
+	local boards = json.decode( data ).boards
+	return boards
+end
 
 -- 質問板が押されたらその板の画面へ
 local function onDecideBtnRelease()
@@ -57,22 +66,7 @@ function scene:create( event )
 	bg.anchorY 	= 0
 	bg:setFillColor( 1 )
 
-	-- ボタン設定
-	DecideBtn = widget.newButton{
-		label 			= "○○説明会2016",
-		labelColor 	= { default={255}, over={128} },
-		defaultFile = "imgs/apps/btn.png",
-		overFile 		= "imgs/apps/btnover.png",
-		width 			= _W/3*2,
-		height 			= _H/6,
-		emboss 			= true,
-		onRelease 	= onDecideBtnRelease
-	}
-	DecideBtn.x 	= _W*0.5
-	DecideBtn.y 	= _H /3 *2
-
 	sceneGroup:insert( bg )
-	sceneGroup:insert( DecideBtn )
 end
 
 function scene:show( event )
@@ -81,6 +75,9 @@ function scene:show( event )
 
 	if phase == "will" then
 	elseif phase == "did" then
+
+		local boards = getBoards()
+
 		mui.init()
 
     -- navbar設定
@@ -135,7 +132,7 @@ function scene:show( event )
       y         = 85,
       x         = _W / 2,
       name      = "result-text",
-      text      = "検索結果n件がヒットしました",
+      text      = "検索結果"..#boards.."件がヒットしました",
       align     = "center",
       width     = 400,
       font      = native.systemFont,
@@ -144,26 +141,68 @@ function scene:show( event )
     }
     mui.newText(resultTextOps)
 
-		local scrollView = widget.newScrollView(
-		    {
-		        top = 110,
-		        left = 0,
-		        width = _W,
-		        height = _H,
-		        scrollWidth = 0,
-		        scrollHeight = 1000,
-						horizontalScrollDisabled = true,
-		        listener = scrollListener
-		    }
-		)
+		-- scroll設定
+		-- 各Row設定
+		local function onRowRender( event )
+		   local row 	= event.row
+		   local id 	= row.index
 
-		-- Create a image and insert it into the scroll view
-		background 					= display.newRect( 0, 0, _W, _H )
-		background:setFillColor( 0 )
-		background.anchorX 	= 0
-		background.anchorY 	= 0
-		scrollView:insert( background )
-		sceneGroup:insert( scrollView )
+		   row.bg 				= display.newRect( 0, 0, display.contentWidth, 59 )
+		   row.bg.anchorX = 0
+		   row.bg.anchorY = 0
+		   row.bg:setFillColor( 1 )
+		   row:insert( row.bg )
+
+		   if event.row.params then
+		       local name 	= event.row.params.name
+		       local detail = event.row.params.detail
+
+		       row.nameText 				= display.newText(name, 12, 0, native.systemFontBold, 14 )
+		       row.nameText.anchorX = 0
+		       row.nameText.anchorY = 0.5
+					 row.nameText.y 			= 20
+					 row.nameText.x 			= 42
+		       row.nameText:setFillColor( 0 )
+
+		       row.detailText 				= display.newText(detail, 12, 0, native.systemFont, 12 )
+		       row.detailText.anchorX = 0
+		       row.detailText.anchorY = 0.5
+					 row.detailText.y 			= 40
+					 row.detailText.x 			= 42
+		       row.detailText:setFillColor( 0.5 )
+
+		       row:insert( row.nameText )
+		       row:insert( row.detailText )
+		   end
+
+		   return true
+		end
+
+		--tableView作成
+		local tableView = widget.newTableView({
+			left 				= 0,
+			top 				= 110,
+			height 			= _W,
+			width 			= _H,
+			onRowRender = onRowRender,
+			onRowTouch 	= onRowTouch,
+			listener 		= scrollListener
+		})
+
+		-- Row挿入
+		for i = 1, #boards do
+			tableView:insertRow({
+				isCategory 	= false,
+				rowHeight 	= 60,
+				rowColor 		= { default={ 1, 1, 1 }, over={ 1, 0.5, 0, 0.2 } },
+				lineColor 	= { 0.90, 0.90, 0.90 },
+				params = {
+					name 		= boards[i].name,
+					detail 	= boards[i].detail
+				}
+			})
+		end
+		sceneGroup:insert( tableView )
 
 
 	end

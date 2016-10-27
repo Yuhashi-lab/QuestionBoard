@@ -9,10 +9,6 @@ local mui = require( "materialui.mui" )
 local _W = display.viewableContentWidth
 local _H = display.viewableContentHeight
 
--- 変数
-local inputName				--入力された名前保存用
-local inputCat 				--入力されたカテゴリ保存用
-
 -- オブジェクト
 local scene = composer.newScene()
 
@@ -27,8 +23,7 @@ end
 
 -- 検索ボタンを押された場合に板検索一覧の表示
 local function onSearchBtnRelease()
-	inputName = mui.getWidgetProperty("name-text", "value")
-
+	composer.setVariable("inputSearchWord", mui.getWidgetProperty("name-text", "value"))
 	composer.gotoScene( "searchResult", "fromBottom", 500 )
 	return true
 end
@@ -121,7 +116,7 @@ function scene:show( event )
 		mui.newTextField({
 			name          = "name-text",
 		  labelText     = "板の名前:",
-	  	text          = "example:静岡大学経営論2016",
+	  	text          = "a",
 		  font          = native.systemFont,
 	  	width         = mui.getScaleVal(400),
 		  height        = mui.getScaleVal(46),
