@@ -53,8 +53,16 @@ function scene:show( event )
 		mui.init()
 
 		-- データ
-		data = http.request("http://questionboardweb.herokuapp.com/api/v1/boards/"..composer.getVariable("boardId"))
-		board = json.decode(data)
+		boardData 		= http.request("http://questionboardweb.herokuapp.com/api/v1/boards/"..composer.getVariable("boardId"))
+		board 				= json.decode(boardData)
+		questionsData = http.request("http://questionboardweb.herokuapp.com/api/v1/boards/"..composer.getVariable("boardId").."/questions")
+		questions 		= json.decode(questionsData)["questions"]
+
+		for i = 1, #questions do
+			print(questions[i].id)
+			print(questions[i].content)
+			print(questions[i].questioner)
+		end
 
 		-- navbar設定
     mui.newNavbar({

@@ -30,7 +30,6 @@ local function onRegistrationBtnRelease()
   inputQuestion = mui.getWidgetProperty("question-textbox", "value")
 
   if inputName ~= "" and inputQuestion ~= "" then
-    print("GOGOGOGO")
 
     local reqbody = "questioner="..inputName.."&content="..inputQuestion.."&board_id="..composer.getVariable("boardId")
     respbody = {}
@@ -52,7 +51,6 @@ local function onRegistrationBtnRelease()
           react = "エラーが発生しました"
       end
     else
-      print("NYUURYOKU")
       react = "一部入力されていません。"
     end
 
