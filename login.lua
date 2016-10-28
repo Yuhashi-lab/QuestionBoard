@@ -63,12 +63,13 @@ local function onLoginBtnRelease(event)
       callBack  = function() end
     })
   else
-    composer.gotoScene("top", "fromRight")
+    composer.gotoScene("top", "fromBottom")
+
   end
 end
 
 -- 新規入会ボタンを押された場合にアカウント作成画面へlocal function onNewAccountBtnRelease()
-	composer.gotoScene( "newAccount", "fromRight", 500 )
+	composer.gotoScene( "newAccount", "fromBottom", 500 )
 end
 
 
@@ -191,16 +192,14 @@ function scene:show( event )	local sceneGroup = self.view
       touchpoint = true,
       callBack   = onNewAccountBtnRelease
     })
-
-
 	end
 end
 
 function scene:hide( event )	local sceneGroup = self.view
 	local phase = event.phase
-	if event.phase == "will" then    mui.destroy()
+	if event.phase == "will" then
+	elseif phase == "did" then    mui.destroy()
 
-	elseif phase == "did" then
 	endend
 
 function scene:destroy( event )	local sceneGroup = self.view

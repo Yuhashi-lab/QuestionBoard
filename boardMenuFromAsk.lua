@@ -3,6 +3,7 @@
 -- ライブラリ
 local composer 	= require( "composer" )
 local widget 		= require "widget"
+local mui = require( "materialui.mui" )
 
 -- 定数
 local _W = display.viewableContentWidth
@@ -12,15 +13,10 @@ local _H = display.viewableContentHeight
 local scene = composer.newScene()
 
 local bg 				-- 背景
-local title 		-- タイトル
-
-local boardName -- テキスト
-
-local back 			-- 前の画面に戻るボタン
-local askBtn 		-- 質問入力画面へ進むボタン
 
 -- 質問入力画面へ進む
 local function onAskBtnRelease()
+	composer.setVariable("board_id", board.id)
 	composer.gotoScene( "question", "fromBottom", 500 )
 	return true
 end
@@ -35,53 +31,11 @@ function scene:create( event )
 	local sceneGroup = self.view
 
 	-- 背景設定
-  bg 					= display.newImage( "CorkBoard.jpg", 0, 0 )
+  bg 					= display.newImage( "imgs/apps/CorkBoard.jpg", 0, 0 )
 	bg.anchorX 	= 0
 	bg.anchorY 	= 0
 
-	-- タイトル設定
-	title = display.newRect(_W/2, 70,_W * 0.5,40 )
-	title.strokeWidth = 3
-	title:setStrokeColor( 0 )
-	title:setFillColor( 1 )
-
-
-	-- テキスト設定
-  boardName = display.newText( "ボード名", _W/2, 72, native.systemFont, 32 )
-  boardName:setTextColor(0,0,0)
-
-	-- ボタン設定
-	back = widget.newButton{
-		defaultFile 	= "imgs/apps/back-before.png",
-		overFile 			= "imgs/apps/back.png",
-		width 				= 50,
-		height 				= 50,
-		emboss 				= true,
-		onRelease 		= onBackBtnRelease
-	}
-	back.anchorX 		= 0
-	back.anchorY 		= 0
-	back.x 					= 0
-	back.y 					= 0
-
-	askBtn = widget.newButton{
-	  defaultFile 	= "imgs/apps/ask.png",
-	  overFile		 	= "imgs/apps/ask.png",
-	  width 				= 50,
-		height 				= 50,
-	  emboss 				= true,
-		onRelease 		= onAskBtnRelease
-	}
-	askBtn.anchorX 	= 0
-	askBtn.anchorY 	= 0
-	askBtn.x 				= _W - 50
-	askBtn.y 				= _H - 50
-
 	sceneGroup:insert( bg )
-	sceneGroup:insert( title )
-  sceneGroup:insert( boardName )
-	sceneGroup:insert( back )
-	sceneGroup:insert( askBtn )
 
 end
 
@@ -91,6 +45,75 @@ function scene:show( event )
 
 	if phase == "will" then
 	elseif phase == "did" then
+		mui.init()
+
+		board = {
+			id = 1,
+			name = "aaa",
+			detail = "あああ"
+		}
+
+		-- navbar設定
+    mui.newNavbar({
+    	name             = "navbar",
+    	height           = mui.getScaleVal(100),
+    	left             = 0,
+    	top              = 0,
+    	fillColor        = { 0.63, 0.81, 0.181 },
+    	activeTextColor  = { 1, 1, 1, 1 },
+    	padding          = mui.getScaleVal(50),
+    })
+
+    navTextOps = {
+      x         = mui.getScaleVal(0),
+    	y         = mui.getScaleVal(0),
+      name      = "nav-text",
+      text      = board.name,
+      align     = "center",
+      width     = mui.getScaleVal(200),
+      height    = mui.getScaleVal(50),
+      font      = native.systemFontBold,
+      fontSize  = mui.getScaleVal(40),
+      fillColor = { 1, 1, 1, 1 },
+    }
+    mui.newText(navTextOps)
+
+		mui.newImageRect({
+    	image  = "imgs/apps/back.png",
+    	name   = "back-btn",
+      width  = mui.getScaleVal(100),
+    	height = mui.getScaleVal(50),
+    })
+    local backBtn = mui.getWidgetBaseObject("back-btn")
+    backBtn:addEventListener("touch", onBackBtnRelease)
+    sceneGroup:insert( backBtn )
+
+    mui.attachToNavBar( "navbar", {
+      widgetName = "back-btn",
+      widgetType = "Image",
+      align      = "left",
+    })
+
+		mui.attachToNavBar( "navbar", {
+      widgetName = "nav-text",
+	    widgetType = "Text",
+	    align      = "left",
+    })
+
+		mui.newRoundedRectButton({
+			name 				= "switchSceneButton",
+			text 				= "+",
+			width 			= mui.getScaleVal(80),
+			height 			= mui.getScaleVal(80),
+			radius 			= mui.getScaleVal(42),
+			x 					= _W - 30,
+			y 					= _H,
+			font 				= native.systemFontBold,
+			fillColor 	= { 0.63, 0.81, 0.181 },
+			textColor 	= { 1, 1, 1 },
+			touchpoint 	= true,
+			callBack 		= onAskBtnRelease
+		})
 
 	end
 end
@@ -100,7 +123,7 @@ function scene:hide( event )
 	local phase = event.phase
 
 	if event.phase == "will" then
-
+		mui.destroy()
 	elseif phase == "did" then
 			end
 end

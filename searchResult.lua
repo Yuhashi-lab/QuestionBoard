@@ -195,8 +195,6 @@ function scene:show( event )
 			})
 		end
 		sceneGroup:insert( tableView )
-
-
 	end
 end
 
@@ -205,9 +203,9 @@ function scene:hide( event )
 	local phase = event.phase
 
 	if event.phase == "will" then
+		mui.destroy()
 
 	elseif phase == "did" then
-		mui.destroy()
 	end
 end
 
