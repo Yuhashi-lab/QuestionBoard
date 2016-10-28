@@ -42,5 +42,4 @@ local function closeSplash()
 
     composer.gotoScene( "login", "fade", 500  )
 end
-
 timer.performWithDelay(2000, closeSplash)
