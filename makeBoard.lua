@@ -3,6 +3,7 @@
 -- ライブラリ
 local composer 	= require( "composer" )
 local widget 		= require "widget"
+local mui = require( "materialui.mui" )
 
 -- 定数
 local _W = display.viewableContentWidth
@@ -29,11 +30,8 @@ local back 						-- 戻るボタン
 
 
 -- 作成ボタンが押された場合に新しい質問板画面へ
-local function onMakeBtnBtnRelease()
-	boardName = boardNameField.text
-	detail = detailField.text
-
-	composer.gotoScene( "boardMenu", "fromBottom", 500 )
+local function onMakeBtnRelease()
+	composer.gotoScene( "boardMenu", "fromRight", 500 )
 	return true
 end
 
@@ -53,56 +51,7 @@ function scene:create( event )
 	bg.anchorY 	= 0
 	bg:setFillColor( 1 )
 
-	-- タイトル設定
-	title 	= display.newText( "ボード情報入力画面", 0, 0, native.systemFont, 32 )
-	title.x = _W * 0.5
-	title.y = 70
-	title:setFillColor( 0 )
-
-	-- テキスト設定
-	boardNameHelp 				= display.newText( "ボードタイトル：", _W/6, _H/4, native.systemFont, 26 )
-	boardNameHelp.anchorX = 0
-	boardNameHelp.anchorY = 0
-	boardNameHelp:setTextColor(0,0,0)
-
-	detailHelp          = display.newText( "詳細説明:", _W/6, _H/2 - 50, native.systemFont, 26 )
-	detailHelp.anchorX  = 0
-	detailHelp.anchorY  = 0
-	detailHelp:setTextColor(0,0,0)
-
-	-- ボタン設定
-	makeBtn = widget.newButton{
-		label 			= "作成",
-		labelColor 	= { default={255}, over={128} },
-		defaultFile = "imgs/apps/btn.png",
-		overFile 		= "imgs/apps/btnover.png",
-		width 			= _W/3*2,
-		height 			= _H/8,
-		emboss 			= true,
-		onRelease 	= onMakeBtnBtnRelease
-	}
-	makeBtn.x 		= _W * 0.5
-	makeBtn.y 		= _H / 3 * 2 + 70
-
-	back = widget.newButton{
-		defaultFile 	= "imgs/apps/back-before.png",
-		overFile 			= "imgs/apps/back.png",
-		width 				= 50,
-		height 				= 50,
-		emboss 				= true,
-		onRelease 		= onBackBtnRelease
-	}
-		back.anchorX 	= 0
-		back.anchorY 	= 0
-		back.x 				= 0
-		back.y 				= 0
-
 	sceneGroup:insert( bg )
-	sceneGroup:insert( title )
-	sceneGroup:insert( makeBtn )
-  sceneGroup:insert( boardNameHelp )
-	sceneGroup:insert( detailHelp )
-  sceneGroup:insert( back )
 
 end
 
@@ -112,15 +61,113 @@ function scene:show( event )
 
 	if phase == "will" then
 
+		mui.init()
+
+		-- タイトルText設定
+    titleTextOps = {
+      y         = 85,
+      x         = _W / 2,
+      name      = "title-text",
+      text      = "板新設",
+      align     = "center",
+      width     = 400,
+      font      = native.systemFontBold,
+      fontSize  = mui.getScaleVal(64),
+      fillColor = { 0, 0, 0, 1 },
+    }
+    mui.newText(titleTextOps)
+
+		mui.newNavbar({
+		  name             = "navbar",
+			height           = mui.getScaleVal(100),
+    	left             = 0,
+		  top              = 0,
+		  fillColor        = { 0.63, 0.81, 0.181 },
+			activeTextColor  = { 1, 1, 1, 1 },
+    	padding          = mui.getScaleVal(50),
+		})
+
+		navTextOps = {
+			x         = mui.getScaleVal(0),
+			y         = mui.getScaleVal(0),
+			name      = "nav-text",
+			text      = "板を設立する",
+			align     = "center",
+			width     = mui.getScaleVal(200),
+			height    = mui.getScaleVal(50),
+			font      = native.systemFontBold,
+			fontSize  = mui.getScaleVal(40),
+			fillColor = { 1, 1, 1, 1 },
+		}
+		mui.newText(navTextOps)
+
+		mui.newImageRect({
+			image  = "imgs/apps/back.png",
+			name   = "back-btn",
+			width  = mui.getScaleVal(100),
+			height = mui.getScaleVal(50),
+		})
+		local backBtn = mui.getWidgetBaseObject("back-btn")
+		backBtn:addEventListener("touch", onBackBtnRelease)
+		sceneGroup:insert( backBtn )
+
+		mui.attachToNavBar( "navbar", {
+			widgetName = "back-btn",
+			widgetType = "Image",
+			align      = "left",
+		})
+
+		mui.attachToNavBar( "navbar", {
+			widgetName = "nav-text",
+		 widgetType = "Text",
+		 align      = "left",
+		})
+
+		mui.newTextField({
+			name          = "boardName",
+			labelText     = "ボードタイトル:",
+			text          = "タイトルを入力",
+			font          = native.systemFont,
+			width         = mui.getScaleVal(400),
+			height        = mui.getScaleVal(46),
+			x             = _W / 2,
+			y             = _H / 5 * 2,
+			activeColor   = { 0.63, 0.81, 0.181, 1 },
+			inactiveColor = { 0.5, 0.5, 0.5, 1 },
+			callBack      = mui.textfieldCallBack
+		})
+
+		mui.newTextField({
+			name          = "detail",
+			labelText     = "詳細:",
+			text          = "詳細はこちらに入力してください",
+			font          = native.systemFont,
+			width         = mui.getScaleVal(400),
+			height        = mui.getScaleVal(46),
+			x             = _W / 2,
+			y             = _H / 5 * 3,
+			activeColor   = { 0.63, 0.81, 0.181, 1 },
+			inactiveColor = { 0.5, 0.5, 0.5, 1 },
+			callBack      = mui.textfieldCallBack
+		})
+
+		-- ボタン設定
+		mui.newRoundedRectButton({
+			name       = "makebtn",
+			text       = "板設立",
+			width      = mui.getScaleVal(200),
+			height     = mui.getScaleVal(80),
+			radius     = mui.getScaleVal(10),
+			x          = _W * 0.5,
+			y          = _H / 4 * 3,
+			font       = native.systemFont,
+			fillColor  = { 0.63, 0.81, 0.181, 1 },
+			textColor  = { 1, 1, 1 },
+			touchpoint = true,
+			callBack   = onMakeBtnRelease
+		})
+
 		-- 入力フィールド設定
-		boardNameField 	= native.newTextField( _W/2, _H/4 + 50, _W/3*2, _H/16)
-
-		detailField            = native.newTextBox( _W/2, _H/3*2 - 30, _W/3*2, _H/4)
-		detailField.size       = 20
-		detailField.isEditable = true
-
-		sceneGroup:insert( boardNameField )
-		sceneGroup:insert( detailField )
 
 	elseif phase == "did" then
 
@@ -132,14 +179,9 @@ function scene:hide( event )
 	local phase = event.phase
 
 	if event.phase == "will" then
-		if boardNameField then
-			boardNameField:removeSelf()
-		end
-		if detailField then
-			detailField:removeSelf()
-		end
 
 	elseif phase == "did" then
+			mui.destroy()
 			end
 end
 

@@ -29,6 +29,11 @@ local function onRegistrationBtnRelease()
   inputPSW      = mui.getWidgetProperty("pwd-text",      "value")
   inputPSW2     = mui.getWidgetProperty("pwd-conf-text", "value")
 
+
+  local emailJudge = string.match(inputEmail, "[a-zA-Z0-9]+[a-zA-Z0-9\._-]*@[a-zA-Z0-9]+\.[a-zA-Z0-9]+[a-zA-Z0-9\._-]+[a-zA-Z0-9]+")
+  if inputEmail ~= emailJudge then
+      reaction = "メールアドレスの形式が正しくありません"
+    else
   if inputPSW:len() < 5 then
       reaction = "パスワードは6桁以上です"
   else
@@ -62,6 +67,7 @@ local function onRegistrationBtnRelease()
       reaction = "確認用パスワードが違います"
     end
   end
+end
   mui.newToast({
     name  = "toast",
     text      = reaction,
@@ -226,9 +232,9 @@ function scene:hide( event )
 	local phase = event.phase
 
 	if event.phase == "will" then
-    mui.destroy()
 
 	elseif phase == "did" then
+    mui.destroy()
 	end
 end
 
