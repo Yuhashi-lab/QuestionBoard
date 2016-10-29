@@ -24,12 +24,6 @@ local function getBoards()
 	return boards
 end
 
--- 質問板が押されたらその板の画面へ
-local function onDecideBtnRelease()
-	composer.gotoScene( "boardMenuFromAsk", "fromBottom", 500 )
-	return true
-end
-
 -- 戻るボタンが押されたら検索画面へ
 local function onBackBtnRelease()
 	composer.gotoScene( "ask", "fromBottom", 500 )

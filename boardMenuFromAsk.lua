@@ -1,9 +1,12 @@
 -- 回答者(企業側)が掲示板を確認する画面
 
 -- ライブラリ
-local composer 	= require( "composer" )
-local widget 		= require "widget"
+local composer = require( "composer" )
+local widget = require "widget"
 local mui = require( "materialui.mui" )
+local http = require("socket.http")
+local json = require "json"
+local ltn12 = require'ltn12'
 
 -- 定数
 local _W = display.viewableContentWidth
@@ -14,9 +17,11 @@ local scene = composer.newScene()
 
 local bg 				-- 背景
 
+
+
 -- 質問入力画面へ進む
 local function onAskBtnRelease()
-	composer.setVariable("board_id", board.id)
+	composer.setVariable("boardId", board.id)
 	composer.gotoScene( "question", "fromBottom", 500 )
 	return true
 end
@@ -47,11 +52,17 @@ function scene:show( event )
 	elseif phase == "did" then
 		mui.init()
 
-		board = {
-			id = 1,
-			name = "aaa",
-			detail = "あああ"
-		}
+		-- データ
+		boardData 		= http.request("http://questionboardweb.herokuapp.com/api/v1/boards/"..composer.getVariable("boardId"))
+		board 				= json.decode(boardData)
+		questionsData = http.request("http://questionboardweb.herokuapp.com/api/v1/boards/"..composer.getVariable("boardId").."/questions")
+		questions 		= json.decode(questionsData)["questions"]
+
+		for i = 1, #questions do
+			print(questions[i].id)
+			print(questions[i].content)
+			print(questions[i].questioner)
+		end
 
 		-- navbar設定
     mui.newNavbar({
@@ -69,8 +80,8 @@ function scene:show( event )
     	y         = mui.getScaleVal(0),
       name      = "nav-text",
       text      = board.name,
-      align     = "center",
-      width     = mui.getScaleVal(200),
+      align     = "left",
+      width     = _W,
       height    = mui.getScaleVal(50),
       font      = native.systemFontBold,
       fontSize  = mui.getScaleVal(40),
