@@ -91,6 +91,19 @@ function scene:show( event )
     }
     mui.newText(titleTextOps)
 
+		userTextOps = {
+			y         = 130,
+			x         = _W / 2,
+			name      = "user-text",
+			text      = "ようこそ"..userInfo["uId"].."さん",
+			align     = "center",
+			width     = 400,
+			font      = native.systemFontBold,
+			fontSize  = mui.getScaleVal(32),
+			fillColor = { 0, 0, 0, 1 },
+		}
+		mui.newText(userTextOps)
+
 		descTextOps = {
       y         = 200,
       x         = _W / 2,
@@ -146,22 +159,14 @@ function scene:hide( event )
 	if event.phase == "will" then
 		mui.destroy()
 	elseif phase == "did" then
+
 	end
 end
 
 function scene:destroy( event )
 	local sceneGroup = self.view
 
-	--ボタンを削除する
-	if LoginBtn then
-		LoginBtn:removeSelf()	-- widgets must be manually removed
-		LoginBtn = nil
-	end
 
-	if AskBtn then
-		AskBtn:removeSelf()	-- widgets must be manually removed
-		AskBtn = nil
-	end
 
 end
 

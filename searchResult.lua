@@ -57,6 +57,7 @@ function scene:show( event )
 	elseif phase == "did" then
 
 		local boards = getBoards()
+		print(boards)
 
 		mui.init()
 

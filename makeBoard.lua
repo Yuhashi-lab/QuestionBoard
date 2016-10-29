@@ -4,7 +4,9 @@
 local composer 	= require( "composer" )
 local widget 		= require "widget"
 local mui = require( "materialui.mui" )
-
+local json = require "json"
+local http = require("socket.http")
+local ltn12 = require'ltn12'
 -- 定数
 local _W = display.viewableContentWidth
 local _H = display.viewableContentHeight
@@ -17,21 +19,34 @@ local category 				-- 入力カテゴリ保存用
 local scene = composer.newScene()
 
 local bg							--背景
-local title 					--タイトル
-
-local boardNameHelp		-- "ボードタイトル:"テキスト
-local detailHelp 		-- "詳細:"テキスト
-
-local boardNameField 	-- ボード名を入力させるテキストフィールド
-local detailField
-
-local makeBtn 				-- "作成"ボタン
-local back 						-- 戻るボタン
-
 
 -- 作成ボタンが押された場合に新しい質問板画面へ
 local function onMakeBtnRelease()
+
+	inputTitle  = mui.getWidgetProperty("boardName", "value")
+  inputDetail = mui.getWidgetProperty("detail"	 , "value")
+
+	-- http request
+	local reqbody = "name="..inputTitle.."&detail="..inputDetail
+	respbody = {}
+	local body, code, headers, status = http.request{
+			url = "http://questionboardweb.herokuapp.com/api/v1/boards",
+			method = "POST",
+			headers =
+			{
+					["Accept"] = "*/*",
+					["Content-Type"] = "application/x-www-form-urlencoded",
+					["Uid"] = userInfo["uId"],
+					["Access-token"] = userInfo["accessToken"],
+					["Client"] = userInfo["Client"],
+					["content-length"] = string.len(reqbody)
+			},
+			source = ltn12.source.string(reqbody),
+			sink = ltn12.sink.table(respbody)
+	}
+
 	composer.gotoScene( "boardMenu", "fromRight", 500 )
+
 	return true
 end
 
