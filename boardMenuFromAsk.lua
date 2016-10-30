@@ -102,7 +102,7 @@ function scene:show( event )
 	    align      = "left",
     })
 
-
+		-- scrollView作成
 		scrollView = widget.newScrollView({
 			top 											= 50,
 			left 											= 0,
@@ -115,22 +115,65 @@ function scene:show( event )
 		})
 		sceneGroup:insert( scrollView )
 
+		-- scrollViewの中身作成
 		postitGroup = display.newGroup()
 		for i = 1, #questions do
+
+			local base_x	= math.random(110,_W-110)
+			local base_y = (i -1) * 200 + 150
+
 			local postit 	= display.newImageRect( postitGroup, "imgs/apps/postit"..(math.random(100) % 4)..".png", 200, 200)
-			postit.x 			= math.random(110,_W-110)
-			postit.y  		= (i -1) * 200 + 150
+			postit.x 			= base_x
+			postit.y  		= base_y
+
+			local function onPostitRelease()
+				print(questions[i].id)
+				composer.setVariable("questionId", questions[i].id)
+			end
+			postit:addEventListener("touch", onPostitRelease)
+
+			local contentTextOptions = {
+				parent		= postitGroup,
+			  text 			= questions[i].content,
+				anchorX		= 0,
+				anchorY		= 0,
+		    x 				= base_x + 5,
+			  y 				= base_y - 5,
+			  width 		= 175,
+				height		= 130,
+		    font 			= native.systemFont,
+		    fontSize 	= 15,
+		    align 		= "left"
+			}
+			local contentText = display.newText( contentTextOptions )
+			contentText:setFillColor( 0 )
+
+			local questionerTextOptions = {
+				parent		= postitGroup,
+			  text 			= questions[i].questioner,
+				anchorX		= 0,
+				anchorY		= 0,
+		    x 				= base_x + 5,
+			  y 				= base_y + 70,
+			  width 		= 175,
+				height		= 13,
+		    font 			= native.systemFont,
+		    fontSize 	= 12,
+		    align 		= "right"
+			}
+			local questionerText = display.newText( questionerTextOptions )
+			questionerText:setFillColor( 0 )
 
 			postitGroup:insert( postit )
+			postitGroup:insert( contentText )
+			postitGroup:insert( questionerText )
 
-			print(questions[i].id)
-			print(questions[i].content)
-			print(questions[i].questioner)
 		end
 		scrollView:insert(postitGroup)
 
+		-- askボタン
 		mui.newRoundedRectButton({
-			name 				= "switchSceneButton",
+			name 				= "add-ask-btn",
 			text 				= "+",
 			width 			= mui.getScaleVal(80),
 			height 			= mui.getScaleVal(80),
@@ -141,8 +184,12 @@ function scene:show( event )
 			fillColor 	= { 0.63, 0.81, 0.181 },
 			textColor 	= { 1, 1, 1 },
 			touchpoint 	= true,
-			callBack 		= onAskBtnRelease
+			userShadow	= true,
+			callBack 		= nil
 		})
+		local addAskBtn = mui.getWidgetBaseObject("add-ask-btn")
+		addAskBtn:addEventListener("touch", onAskBtnRelease)
+		sceneGroup:insert( addAskBtn )
 
 	end
 end
