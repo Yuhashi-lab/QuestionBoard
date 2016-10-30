@@ -18,7 +18,13 @@ local scene = composer.newScene()
 local bg 				-- 背景
 local contentHelpText	-- 質問内容:Text
 local questionerText	-- 質問者名:Text
+local empathyText			-- 共感数:Text
+local answerHelpText	-- 回答:Text
+local contentText			-- 質問内容
+local answerText			-- 回答内容
 
+local contentScrollView	--質問内容表示用Scroll
+local answerScrollView	--回答内容表示用Scroll
 
 -- 検索結果画面へ戻る
 local function onBackBtnRelease()
@@ -33,7 +39,7 @@ function scene:create( event )
   bg 					= display.newRect( 0, 0, _W, _H )
 	bg.anchorX 	= 0
 	bg.anchorY 	= 0
-	bg:setFillColor(0.5)
+	bg:setFillColor( 1 )
 
 	-- 質問内容:Text
 	local contentHelpTextOptions = {
@@ -41,14 +47,14 @@ function scene:create( event )
 		anchorX		= 0,
 		anchorY		= 0,
 		x 				= _W / 4 - 20,
-		y 				= _H / 4,
+		y 				= _H / 4 - 20,
 		width 		= 100,
 		font 			= native.systemFont,
 		fontSize 	= 20,
 		align 		= "left"
 	}
 	contentHelpText = display.newText( contentHelpTextOptions )
-	contentHelpText:setFillColor( 1 )
+	contentHelpText:setFillColor( 0 )
 
 	-- 質問者名:Text
 	local questionerTextOptions = {
@@ -63,11 +69,104 @@ function scene:create( event )
 		align 		= "left"
 	}
 	questionerText = display.newText( questionerTextOptions )
-	questionerText:setFillColor( 1 )
+	questionerText:setFillColor( 0 )
+
+	-- 共感数:Text
+	local empathyTextOptions = {
+		text 			= "",
+		anchorX		= 0,
+		anchorY		= 0,
+		x 				= _W / 2,
+		y 				= _H / 2 + 60,
+		width 		= _W - 30,
+		font 			= native.systemFont,
+		fontSize 	= 20,
+		align 		= "left"
+	}
+	empathyText = display.newText( empathyTextOptions )
+	empathyText:setFillColor( 0 )
+
+	-- 回答:Text
+	local answerTextHelpOptions = {
+		text 			= "回答",
+		anchorX		= 0,
+		anchorY		= 0,
+		x 				= _W / 2,
+		y 				= _H / 2 + 120,
+		width 		= _W - 30,
+		font 			= native.systemFont,
+		fontSize 	= 20,
+		align 		= "left"
+	}
+	answerHelpText = display.newText( answerTextHelpOptions )
+	answerHelpText:setFillColor( 0 )
+
+	-- 質問内容表示用ScrollView作成
+	contentScrollView = widget.newScrollView({
+		top 											= 70,
+		left 											= _W / 2 - 30,
+		width 										= _W / 2 + 20,
+		height										= _H / 4,
+		scrollWidth 							= 0,
+		scrollHeight 							= 0,
+		hideBackground						= false,
+		horizontalScrollDisabled 	= true
+	})
+
+	-- contentScrollViewの中身作成
+	local contentTextOptions = {
+		text 			= "",
+		anchorX		= 0,
+		anchorY		= 0,
+		x 				= _W / 2 - 70,
+		y					= topAlignAxis,
+		width 		= _W / 2 + 10,
+		font 			= native.systemFont,
+		fontSize 	= 16,
+		align 		= "left"
+	}
+	contentText = display.newText( contentTextOptions )
+	contentText.y = contentText.contentHeight / 2							--自分のHeightを使ってScroll内位置調整
+	contentText:setFillColor( 0 )
+	contentScrollView:insert( contentText )
+
+	-- 回答内容表示用ScrollView作成
+	answerScrollView = widget.newScrollView({
+		top 											= _H / 2 + 100,
+		left 											= _W / 2 - 30,
+		width 										= _W / 2 + 20,
+		height										= _H / 4,
+		scrollWidth 							= 0,
+		scrollHeight 							= 0,
+		hideBackground						= false,
+		horizontalScrollDisabled 	= true
+	})
+
+	-- contentScrollViewの中身作成
+	local answerTextOptions = {
+		text 			= "",
+		anchorX		= 0,
+		anchorY		= 0,
+		x 				= _W / 2 - 70,
+		y					= topAlignAxis,
+		width 		= _W / 2 + 10,
+		font 			= native.systemFont,
+		fontSize 	= 16,
+		align 		= "left"
+	}
+	answerText = display.newText( answerTextOptions )
+	answerText.y = answerText.contentHeight / 2							--自分のHeightを使ってScroll内位置調整
+	answerText:setFillColor( 0 )
+	answerScrollView:insert( answerText )
 
 	sceneGroup:insert( bg )
 	sceneGroup:insert( contentHelpText )
 	sceneGroup:insert( questionerText )
+	sceneGroup:insert( empathyText)
+	sceneGroup:insert( answerHelpText )
+	sceneGroup:insert( contentScrollView )
+	sceneGroup:insert( answerScrollView)
+
 
 end
 
@@ -129,38 +228,10 @@ function scene:show( event )
 	    align      = "left",
     })
 
-		-- scrollView作成
-		contentScrollView = widget.newScrollView({
-			top 											= 70,
-			left 											= _W / 2 - 30,
-			width 										= _W / 2 + 20,
-			height										= _H / 4,
-			scrollWidth 							= 0,
-			scrollHeight 							= 0,
-			hideBackground						= false,
-			horizontalScrollDisabled 	= true
-		})
-
-		-- contentScrollViewの中身作成
-		local contentTextOptions = {
-			text 			= question.content,
-			anchorX		= 0,
-			anchorY		= 0,
-		  x 				= _W / 2 - 70,
-			y					= topAlignAxis,
-		  width 		= _W / 2 + 10,
-		  font 			= native.systemFont,
-		  fontSize 	= 16,
-		  align 		= "left"
-		}
-		local contentText = display.newText( contentTextOptions )
-		contentText.y = contentText.contentHeight / 2							--自分のHeightを使ってScroll内位置調整
-		contentText:setFillColor( 0 )
-
-		contentScrollView:insert( contentText )
-		sceneGroup:insert( contentScrollView )
-
 		questionerText.text = "質問者名:"..question.questioner	--質問者名再設定
+		empathyText.text 		= "共感数:"														 --共感数再設定
+		contentText.text		= question.content								 --質問内容再設定
+		answerText.text			= "回答がまだありません"
 
 	end
 end
@@ -172,7 +243,6 @@ function scene:hide( event )
 	if event.phase == "will" then
 		mui.destroy()
 
-		contentScrollView:removeSelf()
 	elseif phase == "did" then
 			end
 end
