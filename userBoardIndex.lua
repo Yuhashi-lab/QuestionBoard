@@ -1,5 +1,6 @@
--- 閲覧、質問をしたいボードを選ばせる画面
+-- 回答者(企業側)が掲示板を確認する画面
 
+-- ライブラリ
 local composer = require( "composer" )
 local widget = require "widget"
 local mui = require( "materialui.mui" )
@@ -14,33 +15,59 @@ local _H = display.viewableContentHeight
 -- オブジェクト
 local scene = composer.newScene()
 
-local bg					-- 背景
+local bg 				-- 背景
 
-local DecideBtn		-- 質問板遷移用ボタン
 
 local function getBoards()
-	local data = http.request("http://questionboardweb.herokuapp.com/api/v1/boards/search/"..composer.getVariable("inputSearchWord"))
-	local boards = json.decode( data ).boards
+	-- http request
+	local reqbody = ""
+	local respbody = {}
+	local body, code, headers, status = http.request{
+			url = "http://questionboardweb.herokuapp.com/api/v1/boards",
+			method = "GET",
+			headers =
+			{
+					["Accept"] = "*/*",
+					["Content-Type"] = "application/x-www-form-urlencoded",
+					["Uid"] = userInfo["uId"],
+					["Access-token"] = userInfo["accessToken"],
+					["Client"] = userInfo["Client"],
+					["content-length"] = string.len(reqbody)
+			},
+			source = ltn12.source.string(reqbody),
+			sink = ltn12.sink.table(respbody)
+	}
+	print(table.concat(respbody))
+	print("以下")
+	local boards = json.decode(table.concat(respbody)).boards
+	print(boards[1].id)
 	return boards
 end
 
--- 戻るボタンが押されたら検索画面へ
+-- トップ画面へ戻る
 local function onBackBtnRelease()
-	composer.gotoScene( "ask", "fromBottom", 500 )
+	composer.gotoScene( "top", "fromBottom", 500 )
 	return true
 end
 
+-- 板新設画面へ進む
+local function onMakeBtnRelease()
+--	composer.setVariable("boardId", board.id)
+	composer.gotoScene( "makeBoard", "fromBottom", 500 )
+	return true
+end
 
 function scene:create( event )
 	local sceneGroup = self.view
 
 	-- 背景設定
-	bg 					= display.newRect( 0, 0, _W, _H )
+  bg 					= display.newRect( 0, 0, _W, _H )
 	bg.anchorX 	= 0
 	bg.anchorY 	= 0
 	bg:setFillColor( 1 )
 
 	sceneGroup:insert( bg )
+
 end
 
 function scene:show( event )
@@ -50,12 +77,12 @@ function scene:show( event )
 	if phase == "will" then
 	elseif phase == "did" then
 
-		local boards = getBoards()
-		print(boards)
-
+--	local boards =
+	  local boards = getBoards()
 		mui.init()
 
-    -- navbar設定
+
+		-- navbar設定
     mui.newNavbar({
     	name             = "navbar",
     	height           = mui.getScaleVal(100),
@@ -70,7 +97,7 @@ function scene:show( event )
       x         = mui.getScaleVal(0),
     	y         = mui.getScaleVal(0),
       name      = "nav-text",
-      text      = "検索結果",
+      text      = "板一覧",
       align     = "center",
       width     = mui.getScaleVal(200),
       height    = mui.getScaleVal(50),
@@ -96,26 +123,26 @@ function scene:show( event )
       align      = "left",
     })
 
-    mui.attachToNavBar( "navbar", {
+		mui.attachToNavBar( "navbar", {
       widgetName = "nav-text",
 	    widgetType = "Text",
 	    align      = "left",
     })
 
-    -- 検索結果Text設定
-    resultTextOps = {
-      y         = 85,
-      x         = _W / 2,
-      name      = "result-text",
-      text      = "検索結果"..#boards.."件がヒットしました",
-      align     = "center",
-      width     = 400,
-      font      = native.systemFont,
-      fontSize  = mui.getScaleVal(32),
-      fillColor = { 0, 0, 0, 1 },
-    }
-    mui.newText(resultTextOps)
-
+    mui.newRoundedRectButton({
+			name 				= "switchSceneButton",
+			text 				= "+",
+			width 			= mui.getScaleVal(80),
+			height 			= mui.getScaleVal(80),
+			radius 			= mui.getScaleVal(42),
+			x 					= _W - 30,
+			y 					= _H,
+			font 				= native.systemFontBold,
+			fillColor 	= { 0.63, 0.81, 0.181 },
+			textColor 	= { 1, 1, 1 },
+			touchpoint 	= true,
+			callBack 		= onMakeBtnRelease
+		})
 		-- scroll設定
 		-- 各Row設定
 		local function onRowRender( event )
@@ -191,7 +218,11 @@ function scene:show( event )
 		end
 		sceneGroup:insert( tableView )
 	end
-end
+
+
+	end
+
+
 
 function scene:hide( event )
 	local sceneGroup = self.view
@@ -199,14 +230,12 @@ function scene:hide( event )
 
 	if event.phase == "will" then
 		mui.destroy()
-
 	elseif phase == "did" then
-	end
+			end
 end
 
 function scene:destroy( event )
 	local sceneGroup = self.view
-
 
 end
 
