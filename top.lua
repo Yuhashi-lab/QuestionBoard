@@ -16,13 +16,13 @@ local bg					--背景
 
 -- "質問をする"が押された場合は板検索画面へ
 local function onAskBtnRelease()
-	composer.gotoScene( "ask", "crossFade", 500 )
+	composer.gotoScene( "ask", "fromRight", 500 )
 	return true
 end
 
 -- ”質問板作成”が押された場合はログイン画面へ
 local function onBoardBtnRelease()
-	composer.gotoScene( "userBoardIndex", "crossFade", 500 )
+	composer.gotoScene( "userBoardIndex", "fromRight", 500 )
 	return true
 end
 

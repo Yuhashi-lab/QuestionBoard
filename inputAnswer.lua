@@ -32,7 +32,7 @@ local question
 
 -- 検索結果画面へ戻る
 local function onBackBtnRelease()
-	composer.gotoScene( "boardMenu", "fromRight", 500 )
+	composer.gotoScene( "boardMenu", "fromLeft", 500 )
 	return true
 end
 

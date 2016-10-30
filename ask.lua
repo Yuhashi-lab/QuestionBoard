@@ -17,14 +17,32 @@ local searchBtn 			-- "検索"ボタン
 
 -- 戻るボタンを押された場合はトップ画面へ
 local function onBackBtnRelease()
-	composer.gotoScene( "top", "fromBottom", 500 )
+	composer.gotoScene( "top", "fromLeft", 500 )
 	return true
 end
 
 -- 検索ボタンを押された場合に板検索一覧の表示
 local function onSearchBtnRelease()
-	composer.setVariable("inputSearchWord", mui.getWidgetProperty("name-text", "value"))
-	composer.gotoScene( "searchResult", "fromRight", 500 )
+	if mui.getWidgetProperty("name-text", "value") == "" then
+		mui.newToast({
+      name  = "toast",
+      text      = "検索ワードが入っていません",
+      radius    = 0,
+      width     = _W+100,
+      height    = mui.getScaleVal(50),
+      font      = native.systemFont,
+      fontSize  = mui.getScaleVal(24),
+      fillColor = { 0, 0, 0, 1 },
+      textColor = { 1, 1, 1, 1 },
+      top       = _H - 30,
+      easingIn  = 0,
+      easingOut = 500,
+      callBack  = function() end
+    })
+	else
+		composer.setVariable("inputSearchWord", mui.getWidgetProperty("name-text", "value"))
+		composer.gotoScene( "searchResult", "fromRight", 500 )
+	end
 	return true
 end
 
@@ -116,7 +134,7 @@ function scene:show( event )
 		mui.newTextField({
 			name          = "name-text",
 		  labelText     = "板の名前:",
-	  	text          = "a",
+	  	text          = "",
 		  font          = native.systemFont,
 	  	width         = mui.getScaleVal(400),
 		  height        = mui.getScaleVal(46),

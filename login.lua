@@ -135,7 +135,7 @@ function scene:show( event )	local sceneGroup = self.view
     mui.newTextField({
     	name          = "email-text",
     	labelText     = "E-mail:",
-    	text          = "admin@email.com",
+    	text          = "",
     	font          = native.systemFont,
     	width         = mui.getScaleVal(400),
     	height        = mui.getScaleVal(46),
@@ -149,7 +149,7 @@ function scene:show( event )	local sceneGroup = self.view
     mui.newTextField({
       name          = "pwd-text",
       labelText     = "Password:",
-      text          = "administrator",
+      text          = "",
       font          = native.systemFont,
       width         = mui.getScaleVal(400),
       height        = mui.getScaleVal(46),

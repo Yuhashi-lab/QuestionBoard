@@ -23,12 +23,17 @@ local scene = composer.newScene()
 
 local bg                --背景
 
+-- 戻るボタンが押されたらログイン画面に戻る
+local function onBackBtnRelease()
+	composer.gotoScene( "login", "fromLeft", 500 )
+	return true
+end
+
 -- 登録ボタンが押されたらフラッシュを出してログイン画面に戻る
 local function onRegistrationBtnRelease()
   inputEmail    = mui.getWidgetProperty("email-text",    "value")
   inputPSW      = mui.getWidgetProperty("pwd-text",      "value")
   inputPSW2     = mui.getWidgetProperty("pwd-conf-text", "value")
-
 
   local emailJudge = string.match(inputEmail, "[a-zA-Z0-9]+[a-zA-Z0-9\._-]*@[a-zA-Z0-9]+\.[a-zA-Z0-9]+[a-zA-Z0-9\._-]+[a-zA-Z0-9]+")
   if inputEmail ~= emailJudge then
@@ -81,14 +86,11 @@ end
     top       = _H - 30,
     easingIn  = 0,
     easingOut = 500,
-    callBack  = function() end
+    callBack  = onBackBtnRelease
   })
-end
 
--- 戻るボタンが押されたらログイン画面に戻る
-local function onBackBtnRelease()
-	composer.gotoScene( "login", "fromLeft", 500 )
-	return true
+  timer.performWithDelay(2000, onBackBtnRelease)
+
 end
 
 
@@ -203,6 +205,7 @@ function scene:show( event )
       y             =  _H/4*3 - 50,
       activeColor   = { 0.63, 0.81, 0.181, 1 },
       inactiveColor = { 0.5, 0.5, 0.5, 1 },
+      isSecure      = true,
       callBack      = mui.textfieldCallBack
     })
 

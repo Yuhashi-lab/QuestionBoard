@@ -40,7 +40,6 @@ end
 
 --気になるボタン
 local function onEmpathyBtnRelease()
-	print("EMPATHY")
 	-- http request
 	local reqbody = ""
 	local respbody = {}

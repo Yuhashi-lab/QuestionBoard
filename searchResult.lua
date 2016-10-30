@@ -26,7 +26,7 @@ end
 
 -- 戻るボタンが押されたら検索画面へ
 local function onBackBtnRelease()
-	composer.gotoScene( "ask", "fromBottom", 500 )
+	composer.gotoScene( "ask", "fromLeft", 500 )
 	return true
 end
 

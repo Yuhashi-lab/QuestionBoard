@@ -22,13 +22,13 @@ local scrollView
 -- 質問入力画面へ進む
 local function onAskBtnRelease()
 	composer.setVariable("boardId", board.id)
-	composer.gotoScene( "question", "fromBottom", 500 )
+	composer.gotoScene( "question", "fromRight", 500 )
 	return true
 end
 
 -- 検索結果画面へ戻る
 local function onBackBtnRelease()
-	composer.gotoScene( "searchResult", "fromBottom", 500 )
+	composer.gotoScene( "searchResult", "fromLeft", 500 )
 	return true
 end
 
@@ -128,7 +128,7 @@ function scene:show( event )
 
 			local function onPostitRelease()
 				composer.setVariable("questionId", questions[i].id)
-				composer.gotoScene( "questionDetail", "fromBottom", 500 )
+				composer.gotoScene( "questionDetail", "fromRight", 500 )
 			end
 			postit:addEventListener("touch", onPostitRelease)
 

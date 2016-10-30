@@ -45,14 +45,14 @@ local function onMakeBtnRelease()
 			sink = ltn12.sink.table(respbody)
 	}
 
-	composer.gotoScene( "boardMenu", "fromRight", 500 )
+	composer.gotoScene( "userBoardIndex", "fromLeft", 500 )
 
 	return true
 end
 
 -- 戻るボタンが押されたらトップ画面へ
 local function onBackBtnRelease()
-	composer.gotoScene( "top", "fromBottom", 500 )
+	composer.gotoScene( "userBoardIndex", "fromLeft", 500 )
 	return true
 end
 
@@ -76,6 +76,7 @@ function scene:show( event )
 
 	if phase == "will" then
 
+	elseif phase == "did" then
 		mui.init()
 
 		-- タイトルText設定
@@ -108,7 +109,7 @@ function scene:show( event )
 			name      = "nav-text",
 			text      = "板を設立する",
 			align     = "center",
-			width     = mui.getScaleVal(200),
+			width     = mui.getScaleVal(400),
 			height    = mui.getScaleVal(50),
 			font      = native.systemFontBold,
 			fontSize  = mui.getScaleVal(40),
@@ -141,7 +142,7 @@ function scene:show( event )
 		mui.newTextField({
 			name          = "boardName",
 			labelText     = "ボードタイトル:",
-			text          = "タイトルを入力",
+			text          = "",
 			font          = native.systemFont,
 			width         = mui.getScaleVal(400),
 			height        = mui.getScaleVal(46),
@@ -155,7 +156,7 @@ function scene:show( event )
 		mui.newTextField({
 			name          = "detail",
 			labelText     = "詳細:",
-			text          = "詳細はこちらに入力してください",
+			text          = "",
 			font          = native.systemFont,
 			width         = mui.getScaleVal(400),
 			height        = mui.getScaleVal(46),
@@ -181,11 +182,6 @@ function scene:show( event )
 			touchpoint = true,
 			callBack   = onMakeBtnRelease
 		})
-
-		-- 入力フィールド設定
-
-	elseif phase == "did" then
-
 	end
 end
 
@@ -194,9 +190,9 @@ function scene:hide( event )
 	local phase = event.phase
 
 	if event.phase == "will" then
+		mui.destroy()
 
 	elseif phase == "did" then
-			mui.destroy()
 			end
 end
 

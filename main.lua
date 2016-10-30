@@ -14,13 +14,6 @@ userInfo = {}
 
 -- オブジェクト
 local bg, logo
-
---local inivitation_data = http.request("https://questionboard.herokuapp.com/users/show/kawase-y") -- test
---local invitations = json.decode(inivitation_data) -- test
---local getNum = invitations["name"] -- text
---local testData = display.newText( getNum, 50, 50, native.systemFont, 32 ) -- test
---testData:setTextColor(0,0,0)
-
 bg    = display.newRect(0,0, _W, _H)
 bg.x  = _W/2
 bg.y  = _H/2

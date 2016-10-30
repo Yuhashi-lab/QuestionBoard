@@ -37,23 +37,20 @@ local function getBoards()
 			source = ltn12.source.string(reqbody),
 			sink = ltn12.sink.table(respbody)
 	}
-	print(table.concat(respbody))
-	print("以下")
 	local boards = json.decode(table.concat(respbody)).boards
-	print(boards[1].id)
 	return boards
 end
 
 -- トップ画面へ戻る
 local function onBackBtnRelease()
-	composer.gotoScene( "top", "fromBottom", 500 )
+	composer.gotoScene( "top", "fromLeft", 500 )
 	return true
 end
 
 -- 板新設画面へ進む
 local function onMakeBtnRelease()
 --	composer.setVariable("boardId", board.id)
-	composer.gotoScene( "makeBoard", "fromBottom", 500 )
+	composer.gotoScene( "makeBoard", "fromRight", 500 )
 	return true
 end
 
@@ -77,7 +74,6 @@ function scene:show( event )
 	if phase == "will" then
 	elseif phase == "did" then
 
---	local boards =
 	  local boards = getBoards()
 		mui.init()
 

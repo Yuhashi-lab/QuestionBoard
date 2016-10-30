@@ -20,7 +20,7 @@ local registBtn
 
 -- 戻るボタンを押したら質問板に戻る
 local function onBackBtnRelease()
-	composer.gotoScene( "boardMenuFromAsk", "fromBottom", 500 )
+	composer.gotoScene( "boardMenuFromAsk", "fromLeft", 500 )
 	return true
 end
 
