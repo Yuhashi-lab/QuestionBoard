@@ -17,21 +17,57 @@ local scene = composer.newScene()
 
 local bg 				-- 背景
 
--- 質問入力画面へ進む
-local function onAskBtnRelease()
-	composer.setVariable("boardId", board.id)
-	composer.gotoScene( "question", "fromBottom", 500 )
+
+local function getBoards()
+	-- http request
+	local reqbody = ""
+	local respbody = {}
+	local body, code, headers, status = http.request{
+			url = "http://questionboardweb.herokuapp.com/api/v1/boards",
+			method = "GET",
+			headers =
+			{
+					["Accept"] = "*/*",
+					["Content-Type"] = "application/x-www-form-urlencoded",
+					["Uid"] = userInfo["uId"],
+					["Access-token"] = userInfo["accessToken"],
+					["Client"] = userInfo["Client"],
+					["content-length"] = string.len(reqbody)
+			},
+			source = ltn12.source.string(reqbody),
+			sink = ltn12.sink.table(respbody)
+	}
+	print(table.concat(respbody))
+	print("以下")
+	local boards = json.decode(table.concat(respbody)).boards
+	print(boards[1].id)
+	return boards
+end
+
+-- トップ画面へ戻る
+local function onBackBtnRelease()
+	composer.gotoScene( "top", "fromBottom", 500 )
 	return true
 end
 
--- 検索結果画面へ戻る
-local function onBackBtnRelease()
-	composer.gotoScene( "searchResult", "fromBottom", 500 )
+-- 板新設画面へ進む
+local function onMakeBtnRelease()
+--	composer.setVariable("boardId", board.id)
+	composer.gotoScene( "makeBoard", "fromBottom", 500 )
 	return true
 end
 
 function scene:create( event )
 	local sceneGroup = self.view
+
+	-- 背景設定
+  bg 					= display.newRect( 0, 0, _W, _H )
+	bg.anchorX 	= 0
+	bg.anchorY 	= 0
+	bg:setFillColor( 1 )
+
+	sceneGroup:insert( bg )
+
 end
 
 function scene:show( event )
@@ -40,13 +76,11 @@ function scene:show( event )
 
 	if phase == "will" then
 	elseif phase == "did" then
+
+--	local boards =
+	  local boards = getBoards()
 		mui.init()
 
-		-- データ
-		boardData 		= http.request("http://questionboardweb.herokuapp.com/api/v1/boards/"..composer.getVariable("boardId"))
-		board 				= json.decode(boardData)
-		questionsData = http.request("http://questionboardweb.herokuapp.com/api/v1/boards/"..composer.getVariable("boardId").."/questions")
-		questions 		= json.decode(questionsData)["questions"]
 
 		-- navbar設定
     mui.newNavbar({
@@ -63,9 +97,9 @@ function scene:show( event )
       x         = mui.getScaleVal(0),
     	y         = mui.getScaleVal(0),
       name      = "nav-text",
-      text      = board.name,
-      align     = "left",
-      width     = _W,
+      text      = "板一覧",
+      align     = "center",
+      width     = mui.getScaleVal(200),
       height    = mui.getScaleVal(50),
       font      = native.systemFontBold,
       fontSize  = mui.getScaleVal(40),
@@ -95,36 +129,7 @@ function scene:show( event )
 	    align      = "left",
     })
 
-		local scrollView = widget.newScrollView({
-			top 											= 50,
-			left 											= 0,
-			width 										= _W,
-			height										= _H,
-			scrollWidth 							= 0,
-			scrollHeight 							= 0,
-			horizontalScrollDisabled 	= true
-		})
-		local bg = display.newImageRect( "imgs/apps/CorkBoard.jpg", _W, _H )
-		bg.anchorX = 0
-		bg.Y = 0
-		scrollView:insert(bg)
-		sceneGroup:insert( scrollView )
-
-		postitGroup = display.newGroup()
-		for i = 1, #questions do
-			local postit 	= display.newImageRect(postitGroup, "imgs/apps/postit"..(math.random(100) % 4)..".png", 200, 200)
-			postit.x 			= math.random(110,_W-110)
-			postit.y  		= (i -1) * 200 + 150
-
-			postitGroup:insert( postit )
-			scrollView:insert( postit )
-
-			print(questions[i].id)
-			print(questions[i].content)
-			print(questions[i].questioner)
-		end
-
-		mui.newRoundedRectButton({
+    mui.newRoundedRectButton({
 			name 				= "switchSceneButton",
 			text 				= "+",
 			width 			= mui.getScaleVal(80),
@@ -136,11 +141,88 @@ function scene:show( event )
 			fillColor 	= { 0.63, 0.81, 0.181 },
 			textColor 	= { 1, 1, 1 },
 			touchpoint 	= true,
-			callBack 		= onAskBtnRelease
+			callBack 		= onMakeBtnRelease
+		})
+		-- scroll設定
+		-- 各Row設定
+		local function onRowRender( event )
+		   local row 	= event.row
+		   local id 	= row.index
+
+		   row.bg 				= display.newRect( 0, 0, display.contentWidth, 59 )
+		   row.bg.anchorX = 0
+		   row.bg.anchorY = 0
+		   row.bg:setFillColor( 1 )
+
+			 row.btn	 				= display.newImageRect( "imgs/apps/ahead.png", 50, 50)
+			 row.btn.anchorX	= 0
+			 row.btn.anchorY	= 0
+			 row.btn.x				= _W - 50
+			 row.btn.y				= 0
+			 local function onBtnRelease()
+				 composer.setVariable("boardId", boards[id]["id"])
+				 composer.gotoScene( "boardMenuFromAsk", "fromRight", 500 )
+			 end
+			 row.btn:addEventListener("touch", onBtnRelease)
+
+			 row:insert( row.bg )
+			 row:insert( row.btn )
+
+		   if event.row.params then
+		       local name 	= event.row.params.name
+		       local detail = event.row.params.detail
+
+		       row.nameText 				= display.newText(name, 12, 0, native.systemFontBold, 14 )
+		       row.nameText.anchorX = 0
+		       row.nameText.anchorY = 0.5
+					 row.nameText.y 			= 20
+					 row.nameText.x 			= 42
+		       row.nameText:setFillColor( 0 )
+
+		       row.detailText 				= display.newText(detail, 12, 0, native.systemFont, 12 )
+		       row.detailText.anchorX = 0
+		       row.detailText.anchorY = 0.5
+					 row.detailText.y 			= 43
+					 row.detailText.x 			= 42
+		       row.detailText:setFillColor( 0.5 )
+
+		       row:insert( row.nameText )
+		       row:insert( row.detailText )
+		   end
+
+		   return true
+		end
+
+		--tableView作成
+		local tableView = widget.newTableView({
+			left 				= 0,
+			top 				= 110,
+			height 			= _W,
+			width 			= _H,
+			onRowRender = onRowRender,
+			onRowTouch 	= onRowTouch,
 		})
 
+		-- Row挿入
+		for i = 1, #boards do
+			tableView:insertRow({
+				isCategory 	= false,
+				rowHeight 	= 60,
+				rowColor 		= { default={ 1, 1, 1 }, over={ 1, 0.5, 0, 0.2 } },
+				lineColor 	= { 0.90, 0.90, 0.90 },
+				params = {
+					name 		= boards[i].name,
+					detail 	= boards[i].detail
+				}
+			})
+		end
+		sceneGroup:insert( tableView )
 	end
-end
+
+
+	end
+
+
 
 function scene:hide( event )
 	local sceneGroup = self.view
@@ -148,7 +230,6 @@ function scene:hide( event )
 
 	if event.phase == "will" then
 		mui.destroy()
-		display.remove( postitGroup )
 	elseif phase == "did" then
 			end
 end
