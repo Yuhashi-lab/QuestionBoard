@@ -26,10 +26,52 @@ local answerText			-- 回答内容
 local contentScrollView	--質問内容表示用Scroll
 local answerScrollView	--回答内容表示用Scroll
 
+-- data
+local questionData 		= http.request("http://questionboardweb.herokuapp.com/api/v1/questions/"..composer.getVariable("questionId"))
+local question 				= json.decode(questionData)
+
 -- 検索結果画面へ戻る
 local function onBackBtnRelease()
 	composer.gotoScene( "boardMenuFromAsk", "fromBottom", 500 )
 	return true
+end
+
+--気になるボタン
+local function onEmpathyBtnRelease()
+	-- http request
+	local reqbody = ""
+	local respbody = {}
+	local body, code, headers, status = http.request{
+			url = "http://questionboardweb.herokuapp.com/api/v1/questions/"..composer.getVariable("questionId").."/empathy",
+			method = "POST",
+			headers =
+			{
+					["Accept"] = "*/*",
+					["Content-Type"] = "application/x-www-form-urlencoded",
+					["Uid"] = userInfo["uId"],
+					["Access-token"] = userInfo["accessToken"],
+					["Client"] = userInfo["Client"],
+					["content-length"] = string.len(reqbody)
+			},
+			source = ltn12.source.string(reqbody),
+			sink = ltn12.sink.table(respbody)
+	}
+	mui.newToast({
+		name  = "toast",
+		text      = "送信しました。",
+		radius    = 0,
+		width     = _W+100,
+		height    = mui.getScaleVal(50),
+		font      = native.systemFont,
+		fontSize  = mui.getScaleVal(24),
+		fillColor = { 0, 0, 0, 1 },
+		textColor = { 1, 1, 1, 1 },
+		top       = _H - 30,
+		easingIn  = 0,
+		easingOut = 500,
+		callBack  = function() end
+	})
+	empathyText.text = "気になる:"..question.empathy_count + 1
 end
 
 function scene:create( event )
@@ -126,7 +168,6 @@ function scene:create( event )
 		align 		= "left"
 	}
 	contentText = display.newText( contentTextOptions )
-	contentText.y = contentText.contentHeight / 2							--自分のHeightを使ってScroll内位置調整
 	contentText:setFillColor( 0 )
 	contentScrollView:insert( contentText )
 
@@ -155,7 +196,6 @@ function scene:create( event )
 		align 		= "left"
 	}
 	answerText = display.newText( answerTextOptions )
-	answerText.y = answerText.contentHeight / 2							--自分のHeightを使ってScroll内位置調整
 	answerText:setFillColor( 0 )
 	answerScrollView:insert( answerText )
 
@@ -178,8 +218,7 @@ function scene:show( event )
 	elseif phase == "did" then
 		mui.init()
 
-		local questionData 		= http.request("http://questionboardweb.herokuapp.com/api/v1/questions/"..composer.getVariable("questionId"))
-		local question 				= json.decode(questionData)
+
 
 		-- navbar設定
     mui.newNavbar({
@@ -228,9 +267,26 @@ function scene:show( event )
 	    align      = "left",
     })
 
+		-- ボタン
+    mui.newRoundedRectButton({
+    	name       = "empathy-btn",
+    	text       = "気になる！",
+    	width      = mui.getScaleVal(300),
+    	height     = mui.getScaleVal(80),
+    	radius     = mui.getScaleVal(10),
+			x 				= _W * 0.75,
+			y 				= _H / 2 + 60,
+    	font       = native.systemFont,
+    	fillColor  = { 0.63, 0.81, 0.181, 1 },
+    	textColor  = { 1, 1, 1 },
+    	touchpoint = true,
+    	callBack   = onEmpathyBtnRelease
+    })
+
 		questionerText.text = "質問者名:"..question.questioner	--質問者名再設定
-		empathyText.text 		= "共感数:"														 --共感数再設定
+		empathyText.text 		= "気になる:"..question.empathy_count --共感数再設定
 		contentText.text		= question.content								 --質問内容再設定
+		answerText.y 				= answerText.contentHeight / 2		 --自分のHeightを使ってScroll内位置調整
 		answerText.text			= "回答がまだありません"
 
 	end
