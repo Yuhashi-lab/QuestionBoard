@@ -17,6 +17,8 @@ local scene = composer.newScene()
 
 local bg 				-- 背景
 
+local scrollView
+
 -- 質問入力画面へ進む
 local function onAskBtnRelease()
 	composer.setVariable("boardId", board.id)
@@ -32,6 +34,11 @@ end
 
 function scene:create( event )
 	local sceneGroup = self.view
+
+	bg = display.newImageRect( "imgs/apps/CorkBoard.jpg", _W, _H + 200 )
+	bg.anchorX = 0
+	bg.anchorY = 0
+	sceneGroup:insert(bg)
 end
 
 function scene:show( event )
@@ -95,34 +102,32 @@ function scene:show( event )
 	    align      = "left",
     })
 
-		local scrollView = widget.newScrollView({
+
+		scrollView = widget.newScrollView({
 			top 											= 50,
 			left 											= 0,
 			width 										= _W,
 			height										= _H,
 			scrollWidth 							= 0,
 			scrollHeight 							= 0,
+			hideBackground						= true,
 			horizontalScrollDisabled 	= true
 		})
-		local bg = display.newImageRect( "imgs/apps/CorkBoard.jpg", _W, _H )
-		bg.anchorX = 0
-		bg.Y = 0
-		scrollView:insert(bg)
 		sceneGroup:insert( scrollView )
 
 		postitGroup = display.newGroup()
 		for i = 1, #questions do
-			local postit 	= display.newImageRect(postitGroup, "imgs/apps/postit"..(math.random(100) % 4)..".png", 200, 200)
+			local postit 	= display.newImageRect( postitGroup, "imgs/apps/postit"..(math.random(100) % 4)..".png", 200, 200)
 			postit.x 			= math.random(110,_W-110)
 			postit.y  		= (i -1) * 200 + 150
 
 			postitGroup:insert( postit )
-			scrollView:insert( postit )
 
 			print(questions[i].id)
 			print(questions[i].content)
 			print(questions[i].questioner)
 		end
+		scrollView:insert(postitGroup)
 
 		mui.newRoundedRectButton({
 			name 				= "switchSceneButton",
