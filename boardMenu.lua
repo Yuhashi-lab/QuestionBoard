@@ -122,8 +122,8 @@ function scene:show( event )
 			postit.y  		= base_y
 
 			local function onPostitRelease()
-				print(questions[i].id)
 				composer.setVariable("questionId", questions[i].id)
+				composer.gotoScene( "inputAnswer", "fromBottom", 500 )
 			end
 			postit:addEventListener("touch", onPostitRelease)
 
@@ -143,14 +143,30 @@ function scene:show( event )
 			local contentText = display.newText( contentTextOptions )
 			contentText:setFillColor( 0 )
 
+			local empathyTextOptions = {
+				parent		= postitGroup,
+				text 			= "気になる×"..questions[i].empathy_count,
+				anchorX		= 0,
+				anchorY		= 0,
+				x 				= base_x - 45,
+				y 				= base_y + 70,
+				width 		= 90,
+				height		= 13,
+				font 			= native.systemFont,
+				fontSize 	= 12,
+				align 		= "left"
+			}
+			local empathyText = display.newText( empathyTextOptions )
+			empathyText:setFillColor( 0 )
+
 			local questionerTextOptions = {
 				parent		= postitGroup,
 			  text 			= questions[i].questioner,
 				anchorX		= 0,
 				anchorY		= 0,
-		    x 				= base_x + 5,
+		    x 				= base_x + 40,
 			  y 				= base_y + 70,
-			  width 		= 175,
+			  width 		= 105,
 				height		= 13,
 		    font 			= native.systemFont,
 		    fontSize 	= 12,
@@ -161,6 +177,7 @@ function scene:show( event )
 
 			postitGroup:insert( postit )
 			postitGroup:insert( contentText )
+			postitGroup:insert( empathyText )
 			postitGroup:insert( questionerText )
 
 		end

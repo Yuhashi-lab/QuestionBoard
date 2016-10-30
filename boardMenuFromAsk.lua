@@ -127,7 +127,6 @@ function scene:show( event )
 			postit.y  		= base_y
 
 			local function onPostitRelease()
-				print(questions[i].id)
 				composer.setVariable("questionId", questions[i].id)
 				composer.gotoScene( "questionDetail", "fromBottom", 500 )
 			end
