@@ -22,7 +22,7 @@ end
 
 -- ”質問板作成”が押された場合はログイン画面へ
 local function onBoardBtnRelease()
-	composer.gotoScene( "makeBoard", "crossFade", 500 )
+	composer.gotoScene( "userBoardIndex", "crossFade", 500 )
 	return true
 end
 
