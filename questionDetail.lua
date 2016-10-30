@@ -30,14 +30,17 @@ local answerScrollView	--回答内容表示用Scroll
 local questionData
 local question
 
+local empathyBtn
+
 -- 検索結果画面へ戻る
 local function onBackBtnRelease()
-	composer.gotoScene( "boardMenuFromAsk", "fromBottom", 500 )
+	composer.gotoScene( "boardMenuFromAsk", "fromLeft", 500 )
 	return true
 end
 
 --気になるボタン
 local function onEmpathyBtnRelease()
+	print("EMPATHY")
 	-- http request
 	local reqbody = ""
 	local respbody = {}
@@ -57,7 +60,7 @@ local function onEmpathyBtnRelease()
 			sink = ltn12.sink.table(respbody)
 	}
 	mui.newToast({
-		name  = "toast",
+		name  		= "toast",
 		text      = "送信しました。",
 		radius    = 0,
 		width     = _W+100,
@@ -71,6 +74,8 @@ local function onEmpathyBtnRelease()
 		easingOut = 500,
 		callBack  = function() end
 	})
+
+	empathyBtn:removeEventListener( "tap", onEmpathyBtnRelease )
 	empathyText.text = "気になる:"..question.empathy_count + 1
 end
 
@@ -206,8 +211,6 @@ function scene:create( event )
 	sceneGroup:insert( answerHelpText )
 	sceneGroup:insert( contentScrollView )
 	sceneGroup:insert( answerScrollView)
-
-
 end
 
 function scene:show( event )
@@ -269,7 +272,7 @@ function scene:show( event )
 	    align      = "left",
     })
 
-		-- ボタン
+		-- 気になるボタン
     mui.newRoundedRectButton({
     	name       = "empathy-btn",
     	text       = "気になる！",
@@ -282,8 +285,11 @@ function scene:show( event )
     	fillColor  = { 0.63, 0.81, 0.181, 1 },
     	textColor  = { 1, 1, 1 },
     	touchpoint = true,
-    	callBack   = onEmpathyBtnRelease
+    	callBack   = nil
     })
+		empathyBtn = mui.getWidgetBaseObject("empathy-btn")
+    empathyBtn:addEventListener("tap", onEmpathyBtnRelease)
+    sceneGroup:insert( empathyBtn )
 
 		questionerText.text = "質問者名:"..question.questioner	--質問者名再設定
 		empathyText.text 		= "気になる:"..question.empathy_count --共感数再設定

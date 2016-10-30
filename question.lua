@@ -16,6 +16,7 @@ local _H = display.viewableContentHeight
 local scene = composer.newScene()
 
 local bg 				-- 背景
+local registBtn
 
 -- 戻るボタンを押したら質問板に戻る
 local function onBackBtnRelease()
@@ -70,6 +71,7 @@ local function onRegistrationBtnRelease()
       callBack  = onBackBtnRelease
     })
 
+		registBtn:removeEventListener("tap", onRegistrationBtnRelease)
     timer.performWithDelay(2000, onBackBtnRelease)
 	return true
 end
@@ -185,8 +187,11 @@ function scene:show( event )
      fillColor  = { 0.63, 0.81, 0.181, 1 },
      textColor  = { 1, 1, 1 },
      touchpoint = true,
-     callBack   = onRegistrationBtnRelease
+     callBack   = nil
     })
+		registBtn = mui.getWidgetBaseObject("post-btn")
+		registBtn:addEventListener("tap", onRegistrationBtnRelease)
+		sceneGroup:insert( registBtn )
 
 
 	end
