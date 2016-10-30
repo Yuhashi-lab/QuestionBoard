@@ -161,7 +161,7 @@ function scene:show( event )
 			 row.btn.y				= 0
 			 local function onBtnRelease()
 				 composer.setVariable("boardId", boards[id]["id"])
-				 composer.gotoScene( "boardMenuFromAsk", "fromRight", 500 )
+				 composer.gotoScene( "boardMenu", "fromRight", 500 )
 			 end
 			 row.btn:addEventListener("touch", onBtnRelease)
 

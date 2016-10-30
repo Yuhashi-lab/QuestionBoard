@@ -1,0 +1,9 @@
+diff a/main.lua b/main.lua	(rejected hunks)
+@@ -20,7 +20,6 @@
+ logo.x  = _W/2
+ logo.y  = _H/2 + 50
+ 
+-
+ -- ã‚¹ãƒ—ãƒ©ãƒƒã‚·ãƒ¥ã‚’é–‰ã˜ã‚‹
+ local function closeSplash()
+ 
