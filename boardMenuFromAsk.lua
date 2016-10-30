@@ -103,7 +103,7 @@ function scene:show( event )
     })
 
 		-- scrollView作成
-		scrollView = widget.newScrollView({
+		local scrollView = widget.newScrollView({
 			top 											= 50,
 			left 											= 0,
 			width 										= _W,
@@ -129,6 +129,7 @@ function scene:show( event )
 			local function onPostitRelease()
 				print(questions[i].id)
 				composer.setVariable("questionId", questions[i].id)
+				composer.gotoScene( "questionDetail", "fromBottom", 500 )
 			end
 			postit:addEventListener("touch", onPostitRelease)
 
@@ -167,7 +168,6 @@ function scene:show( event )
 			postitGroup:insert( postit )
 			postitGroup:insert( contentText )
 			postitGroup:insert( questionerText )
-
 		end
 		scrollView:insert(postitGroup)
 
