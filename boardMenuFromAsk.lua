@@ -17,8 +17,6 @@ local scene = composer.newScene()
 
 local bg 				-- 背景
 
-
-
 -- 質問入力画面へ進む
 local function onAskBtnRelease()
 	composer.setVariable("boardId", board.id)
@@ -34,14 +32,6 @@ end
 
 function scene:create( event )
 	local sceneGroup = self.view
-
-	-- 背景設定
-  bg 					= display.newImage( "imgs/apps/CorkBoard.jpg", 0, 0 )
-	bg.anchorX 	= 0
-	bg.anchorY 	= 0
-
-	sceneGroup:insert( bg )
-
 end
 
 function scene:show( event )
@@ -57,12 +47,6 @@ function scene:show( event )
 		board 				= json.decode(boardData)
 		questionsData = http.request("http://questionboardweb.herokuapp.com/api/v1/boards/"..composer.getVariable("boardId").."/questions")
 		questions 		= json.decode(questionsData)["questions"]
-
-		for i = 1, #questions do
-			print(questions[i].id)
-			print(questions[i].content)
-			print(questions[i].questioner)
-		end
 
 		-- navbar設定
     mui.newNavbar({
@@ -111,6 +95,35 @@ function scene:show( event )
 	    align      = "left",
     })
 
+		local scrollView = widget.newScrollView({
+			top 											= 50,
+			left 											= 0,
+			width 										= _W,
+			height										= _H,
+			scrollWidth 							= 0,
+			scrollHeight 							= 0,
+			horizontalScrollDisabled 	= true
+		})
+		local bg = display.newImageRect( "imgs/apps/CorkBoard.jpg", _W, _H )
+		bg.anchorX = 0
+		bg.Y = 0
+		scrollView:insert(bg)
+		sceneGroup:insert( scrollView )
+
+		postitGroup = display.newGroup()
+		for i = 1, #questions do
+			local postit 	= display.newImageRect(postitGroup, "imgs/apps/postit"..(math.random(100) % 4)..".png", 200, 200)
+			postit.x 			= math.random(110,_W-110)
+			postit.y  		= (i -1) * 200 + 150
+
+			postitGroup:insert( postit )
+			scrollView:insert( postit )
+
+			print(questions[i].id)
+			print(questions[i].content)
+			print(questions[i].questioner)
+		end
+
 		mui.newRoundedRectButton({
 			name 				= "switchSceneButton",
 			text 				= "+",
@@ -135,6 +148,7 @@ function scene:hide( event )
 
 	if event.phase == "will" then
 		mui.destroy()
+		display.remove( postitGroup )
 	elseif phase == "did" then
 			end
 end
